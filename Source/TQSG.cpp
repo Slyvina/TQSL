@@ -1,9 +1,3 @@
-#include <TQSG.hpp>
-
-namespace Slyvina {
-	namespace TQSG {
-
-	}
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
@@ -25,4 +19,10 @@ namespace Slyvina {
 // EndLic
 #include <TQSG.hpp>
 #include <SlyvHSVRGB.hpp>
+
+namespace Slyvina {
+	namespace TQSG {
+
+
+	}
 }
