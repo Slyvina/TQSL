@@ -31,7 +31,41 @@ namespace Slyvina {
 
 
 		class _____TIMAGE {
-
+		private:
+		public:
 		};
+
+
+		/// <summary>
+		/// Set the alpha value for rendering
+		/// </summary>
+		/// <param name="alpha"></param>
+		void SetAlpha(byte);
+
+		/// <summary>
+		/// Set the color value for rendering
+		/// </summary>
+		/// <param name="red"></param>
+		/// <param name="green"></param>
+		/// <param name="blue"></param>
+		void SetColor(byte, byte, byte);
+
+		/// <summary>
+		/// Set the color value and the alpha value for rendering
+		/// </summary>
+		/// <param name="r"></param>
+		/// <param name="g"></param>
+		/// <param name="b"></param>
+		/// <param name="a"></param>
+		inline void SetColor(byte r, byte g, byte b, byte a) { SetColor(r, g, b); SetAlpha(a); };
+
+
+		/// <summary>
+		/// Set color by HSV. (NOTE! Saturation and Value must be numbers from 0 to 1. Hue must be from 0 to 360)
+		/// </summary>
+		/// <param name="Hue">Hue</param>
+		/// <param name="Sat">Saturation</param>
+		/// <param name="Value">Value</param>
+		void SetColorHSV(double Hue, double Sat, double Value);
 	}
 }

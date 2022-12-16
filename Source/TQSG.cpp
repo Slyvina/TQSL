@@ -23,6 +23,19 @@
 namespace Slyvina {
 	namespace TQSG {
 
+		static byte
+			_alpha{ 255 },
+			_red{ 255 },
+			_green{ 255 },
+			_blue{ 255 };
+
+		void SetAlpha(byte a) { _alpha = a; }
+		void SetColor(byte r, byte g, byte b) { _red = r; _green = g; _blue = b; }
+		void SetColorHSV(double Hue, double Sat, double Value) {
+			Units::hsv _hsv{ Hue,Sat,Value };
+			auto rgb{ Units::hsv2rgb(_hsv) };
+			SetColor((byte)floor(rgb.r * 255), (byte)floor(rgb.g * 255), (byte)floor(rgb.b * 255));
+		}
 
 	}
 }
