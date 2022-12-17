@@ -386,6 +386,96 @@ namespace Slyvina {
 
 		bool AppTerminate() { return stAppTerminate; }
 
+		bool KeyHit(SDL_KeyCode c) { return stKeyHit[c]; }
+
+		bool KeyDown(SDL_KeyCode c) { return stKeyDown[c]; }
+
+		SDL_KeyCode GetKey() {
+			for (auto& c : stKeyHit) if (c.second) return (SDL_KeyCode)c.first;
+			return SDLK_UNKNOWN;
+		}
+
+		unsigned char GetChar() {
+			auto shift{ KeyDown(SDLK_LSHIFT) || KeyDown(SDLK_RSHIFT) };
+			auto key = GetKey();
+			switch (key) {
+			case SDLK_TAB:
+			case SDLK_BACKSPACE:
+			case SDLK_SPACE:
+			case SDLK_RETURN:
+				return (unsigned char)key;
+			case SDLK_0:
+				if (shift) return ')'; else return '0';
+			case SDLK_1:
+				if (shift) return '!'; else return '1';
+			case SDLK_2:
+				if (shift) return '@'; else return '2';
+			case SDLK_3:
+				if (shift) return '#'; else return '3';
+			case SDLK_4:
+				if (shift) return '$'; else return '4';
+			case SDLK_5:
+				if (shift) return '%'; else return '5';
+			case SDLK_6:
+				if (shift) return '^'; else return '6';
+			case SDLK_7:
+				if (shift) return '&'; else return '7';
+			case SDLK_8:
+				if (shift) return '*'; else return '8';
+			case SDLK_9:
+				if (shift) return '('; else return '9';
+			case SDLK_BACKQUOTE:
+				if (shift) return '`'; else return '~';
+			case SDLK_UNDERSCORE:
+			case SDLK_MINUS:
+				if (shift) return '_'; else return '-';
+			case SDLK_PLUS:
+			case SDLK_EQUALS:
+				if (shift) return '+'; else return '=';
+			case SDLK_BACKSLASH:
+				//if (shift) return '|'; else return '\\';
+				return '\\'; // The | character has a special meaning and should therefore not be used.
+			case SDLK_LEFTBRACKET:
+				if (shift) return '{'; else return '[';
+			case SDLK_RIGHTBRACKET:
+				if (shift) return '}'; else return ']';
+			case SDLK_COLON:
+			case SDLK_SEMICOLON:
+				if (shift) return ':'; else return ';';
+			case SDLK_QUOTE:
+				if (shift) return '"'; else return '\'';
+			case SDLK_COMMA:
+				if (shift) return '<'; else return ',';
+			case SDLK_PERIOD:
+				if (shift) return '>'; else return '.';
+			case SDLK_SLASH:
+				if (shift) return '?'; else return '/';
+			case SDLK_KP_0: return '0';
+			case SDLK_KP_1: return '1';
+			case SDLK_KP_2: return '2';
+			case SDLK_KP_3: return '3';
+			case SDLK_KP_4: return '4';
+			case SDLK_KP_5: return '5';
+			case SDLK_KP_6: return '6';
+			case SDLK_KP_7: return '7';
+			case SDLK_KP_8: return '8';
+			case SDLK_KP_9: return '9';
+			case SDLK_KP_ENTER: return '\r';
+			case SDLK_KP_MINUS: return '-';
+			case SDLK_KP_MULTIPLY: return '*';
+			case SDLK_KP_DIVIDE: return '/';
+			case SDLK_KP_PLUS: return '+';
+			case SDLK_KP_DECIMAL: return '.';
+
+			default:
+				if (key >= SDLK_a && key <= SDLK_z) {
+					if (shift) return (unsigned char)(key - 32);
+					return (unsigned char)key;
+				}
+			}
+			return 0;
+		}
+
 
 	}
 }

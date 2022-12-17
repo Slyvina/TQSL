@@ -41,5 +41,26 @@ namespace Slyvina {
 		/// </summary>
 		/// <returns></returns>
 		bool AppTerminate();
+
+
+		/// <summary>
+		/// Returns true if a key was hit during the last Poll
+		/// </summary>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		bool KeyHit(SDL_KeyCode c);
+
+		/// <summary>
+		/// Returns true if a key was held during the last Poll
+		/// </summary>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		bool KeyDown(SDL_KeyCode c);
+
+		// Bit of a dirty way to get the pressed key and far from fully accrate, but it can sometimes be a better run.
+		SDL_KeyCode GetKey();
+
+		// Will try to get a typable character the last event. Not fully accurate, but for typing names and such it can do the job.
+		unsigned char GetChar();
 	}
 }
