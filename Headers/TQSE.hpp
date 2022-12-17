@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSE.hpp
 // Tricky's Quick SDL Event Handler (header)
-// version: 22.12.17
+// version: 22.12.18
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -62,5 +62,28 @@ namespace Slyvina {
 
 		// Will try to get a typable character the last event. Not fully accurate, but for typing names and such it can do the job.
 		unsigned char GetChar();
+
+
+		int MouseX();
+		int MouseY();
+		void HideMouse();
+		void ShowMouse();
+		bool MouseDown(int code);
+		bool MouseHit(int code);
+		int KeyByName(std::string name);
+		void ShowKeyNames();
+		bool MouseReleased(int c);
+		int MouseWheelY();
+
+		bool Yes(std::string question);
+		void Notify(std::string message);
+
+		void Flush();
+
+		/// <summary>
+		/// Changes the title shown in caption bars of dialog boxes
+		/// </summary>
+		/// <param name="Title"></param>
+		void AppTitle(std::string Title);
 	}
 }

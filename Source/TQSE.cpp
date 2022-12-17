@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSE.cpp
 // Slyvina - Tricky's Quick SDL2 Event handler
-// version: 22.12.17
+// version: 22.12.18
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -23,6 +23,8 @@
 
 namespace Slyvina {
 	namespace TQSE {
+
+		static std::string TQSE_AppTitle = "Slyvina - TQSE Application";
 
 		static const int maxmousebuttons = 16;
 
@@ -476,6 +478,174 @@ namespace Slyvina {
 			return 0;
 		}
 
+
+
+		int MouseX() {
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			return x;
+		}
+
+		int MouseY() {
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			return y;
+		}
+
+		void HideMouse() {
+			SDL_ShowCursor(SDL_DISABLE);
+		}
+
+		void ShowMouse() {
+			SDL_ShowCursor(SDL_ENABLE);
+		}
+
+		bool MouseDown(int code) {
+			if (code < 0 || code >= maxmousebuttons) return false;
+			return MsButDown[code];
+		}
+
+		bool MouseHit(int code) {
+			if (code < 0 || code >= maxmousebuttons) return false;
+			return MsButHit[code];
+		}
+
+		bool MouseReleased(int c) {
+			return MsMouseReleased[(SDL_KeyCode)c];
+		}
+
+		int MouseWheelY() {
+			if (!wheelused)
+				return 0;
+			else
+				return wheel.y;
+		}
+
+
+		int KeyByName(std::string name) {
+			return SDL_GetKeyFromName(name.c_str());
+		}
+
+		void ShowKeyNames() {
+			for (auto kc : stAllKeys) {
+				printf("%10s = %9d\n", SDL_GetKeyName(kc), kc);
+			}
+		}
+
+		bool Yes(std::string question) {
+			const SDL_MessageBoxButtonData buttons[] = {
+				//{ /* .flags, .buttonid, .text */        0, 0, "no" },
+				{ SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Yes" },
+				{ SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 1, "No" },
+			};
+			const SDL_MessageBoxColorScheme colorScheme = {
+				{ /* .colors (.r, .g, .b) */
+					/* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+					{ 100,   0,   0 },
+					/* [SDL_MESSAGEBOX_COLOR_TEXT] */
+					{  255, 180,   0 },
+					/* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+					{ 255, 255,   0 },
+					/* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+					{   0,   0, 255 },
+					/* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+					{ 255,   0, 255 }
+				}
+			};
+			const SDL_MessageBoxData messageboxdata = {
+				SDL_MESSAGEBOX_INFORMATION, /* .flags */
+				NULL, /* .window */
+				"Notice", /* .title */
+				question.c_str(), /* .message */
+				SDL_arraysize(buttons), /* .numbuttons */
+				buttons, /* .buttons */
+				&colorScheme /* .colorScheme */
+			};
+			int buttonid{ 0 };
+			if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
+				//SDL_Log("error displaying message box");
+				std::cout << "SDL Message Box Failure\n";
+				return false;
+
+			}
+			if (buttonid == -1) {
+				SDL_Log("no selection");
+			} else {
+				SDL_Log("selection was %s", buttons[buttonid].text);
+				std::cout << "User selected " << buttonid << " -> " << buttons[buttonid].text << std::endl;
+			}
+			switch (buttonid) {
+			case -1:
+			case 1:
+				return false;
+			case 0:
+				return true;
+			default:
+				std::cout << "Is the input right? I don't think so!\x7\n";
+				return false;
+				break;
+			}
+		}
+
+		void Notify(std::string message) {
+			const SDL_MessageBoxButtonData buttons[] = {
+				//{ /* .flags, .buttonid, .text */        0, 0, "no" },
+				//{ SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "yes" },
+				//{ SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "cancel" },
+					{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,1,"Ok"}
+			};
+			const SDL_MessageBoxColorScheme colorScheme = {
+				{ /* .colors (.r, .g, .b) */
+					/* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+					{ 0,   0,   0 },
+					/* [SDL_MESSAGEBOX_COLOR_TEXT] */
+					{   255, 180,   0 },
+					/* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+					{ 255, 255,   0 },
+					/* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+					{   0,   0, 0 },
+					/* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+					{ 255,   2550, 0 }
+				}
+			};
+			const SDL_MessageBoxData messageboxdata = {
+				SDL_MESSAGEBOX_INFORMATION, /* .flags */
+				NULL, /* .window */
+				TQSE_AppTitle.c_str(), /* .title */
+				message.c_str(), /* .message */
+				SDL_arraysize(buttons), /* .numbuttons */
+				buttons, /* .buttons */
+				&colorScheme /* .colorScheme */
+			};
+			int buttonid;
+			if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
+				SDL_Log("error displaying message box");
+				return;
+			}
+			if (buttonid == -1) {
+				SDL_Log("no selection");
+			} else {
+				//SDL_Log("selection was %s", buttons[buttonid].text);
+				SDL_Log("Selection");
+			}
+			return;
+		}
+
+
+		void Flush() {
+			while (
+				AppTerminate() ||
+				GetKey() ||
+				MouseHit(1) ||
+				MouseHit(2) ||
+				MouseHit(3)
+				)
+				Poll();
+		}
+
+		void AppTitle(std::string Title) {
+			TQSE_AppTitle = Title;
+		}
 
 	}
 }
