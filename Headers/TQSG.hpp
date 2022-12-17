@@ -204,6 +204,12 @@ namespace Slyvina {
 		inline void SetOrigin() { SetOrigin(0, 0); }
 
 		/// <summary>
+		/// Flip will show the result of al earlier drawing requests
+		/// </summary>
+		/// <param name="minticks">By default Flip will wait up to 26 ticks since the last Flip, setting this parameter will change that. Please note, all changes are 'permanent' until the next change</param>
+		void Flip(int minticks=-1);
+
+		/// <summary>
 		/// Load an image and assigns it to a shared pointer.
 		/// This routine is able to read both single picture as .jpbf files (JCR Picture Bundle File).
 		/// </summary>

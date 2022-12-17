@@ -293,6 +293,17 @@ namespace Slyvina {
 			_originy = y;
 		}
 
+		void Flip(int minticks) {
+			if (!NeedScreen()) return;
+			//SDL_UpdateWindowSurface(gWindow);
+			static auto oud{ SDL_GetTicks() };
+			static auto mt{ 26 };
+			if (minticks >= 0) mt = minticks;
+			while (minticks && (SDL_GetTicks() - oud < mt)) SDL_Delay(1);
+			oud = SDL_GetTicks();
+			SDL_RenderPresent(_Screen->gRenderer);
+		}
+
 		TImage LoadImage(std::string file) {
 			_LastError = "";
 			if (!FileExists(file)) {
