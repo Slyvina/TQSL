@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 22.12.17
+// version: 22.12.16
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -321,6 +321,15 @@ namespace Slyvina {
 		}
 
 		TUImage LoadUImage(JCR6::JT_Dir J, std::string entry) {
+			auto ret{ new _____TIMAGE(J,entry) };
+			if (_LastError.size()) { delete ret; return nullptr; }
+			return std::unique_ptr<_____TIMAGE>(ret);
+		}
+
+		TUImage LoadUImage(std::string JCRFile, std::string entry) {
+			_LastError = "";
+			auto J{ JCR6::JCR6_Dir(JCRFile) };
+			if (JCR6::Last()->Error) { _LastError = JCR6::Last()->ErrorMessage;  return nullptr; }
 			auto ret{ new _____TIMAGE(J,entry) };
 			if (_LastError.size()) { delete ret; return nullptr; }
 			return std::unique_ptr<_____TIMAGE>(ret);
