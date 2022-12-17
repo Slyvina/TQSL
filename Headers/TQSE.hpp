@@ -35,5 +35,11 @@ namespace Slyvina {
 		/// </summary>
 		/// <param name="EventCallBack"></param>
 		void Poll(EventFunction EventCallBack = nullptr);
+
+		/// <summary>
+		/// Returns true if the last Poll had an App Termination request.
+		/// </summary>
+		/// <returns></returns>
+		bool AppTerminate();
 	}
 }

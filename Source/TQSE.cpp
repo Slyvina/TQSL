@@ -384,6 +384,8 @@ namespace Slyvina {
 			}
 		}
 
+		bool AppTerminate() { return stAppTerminate; }
+
 
 	}
 }
