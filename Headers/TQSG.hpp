@@ -79,6 +79,12 @@ namespace Slyvina {
 			/// <param name="buf"></param>
 			void LoadFrame(SDL_RWops* buf, bool autofree = true);
 
+			void Blit(int ax, int ay, int isx, int isy, int iex, int iey, int frame = 0);
+
+
+			int Width();
+			int Height();
+
 			inline _____TIMAGE() {} // Just to avoid some crap
 			_____TIMAGE(std::string file);
 			_____TIMAGE(JCR6::JT_Dir Res, std::string entry);
@@ -192,6 +198,10 @@ namespace Slyvina {
 		/// </summary>
 		/// <param name="s"></param>
 		inline void SetScale(double s) { SetScale(s, s); }
+
+
+		void SetOrigin(int x, int y);
+		inline void SetOrigin() { SetOrigin(0, 0); }
 
 		/// <summary>
 		/// Load an image and assigns it to a shared pointer.

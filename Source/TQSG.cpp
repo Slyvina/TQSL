@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 22.12.16
+// version: 22.12.17
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -55,7 +55,13 @@ namespace Slyvina {
 			_scaley{ 1.0 };
 		static Blend
 			_blend{ Blend::ALPHA };
+		static Int32
+			_originx{ 0 },
+			_originy{ 0 };
+
+
 		static SDL_BlendMode SLDBlend() { return (SDL_BlendMode)_blend; }
+
 
 		class __Screen { // A secret class I will use to make sure SDL stuff is always properly disposed.
 		public:
@@ -282,6 +288,11 @@ namespace Slyvina {
 			_scaley = h;
 		}
 
+		void SetOrigin(int x, int y) {
+			_originx = x;
+			_originy = y;
+		}
+
 		TImage LoadImage(std::string file) {
 			_LastError = "";
 			if (!FileExists(file)) {
@@ -365,6 +376,63 @@ namespace Slyvina {
 			auto buf = IMG_LoadTexture_RW(_Screen->gRenderer, data, autofree);
 			if (buf == NULL) { Paniek("Getting texture from SDL_RWops failed!"); return; }
 			Textures.push_back(buf);
+		}
+
+		void _____TIMAGE::Blit(int ax, int ay, int isx, int isy, int iex, int iey, int frame) {
+			if (!NeedScreen()) return;
+			auto
+				x = ax + _originx,
+				y = ay + _originy,
+				imgh = Height(),
+				imgw = Width();
+			SDL_Rect
+				Target,
+				Source;
+			//if (altframing) {
+			//	LastError = "Altframing NOT supported for Blitting (and is not likely to be supported in the future, either!)";
+			//	return;
+			//}
+			Source.x = std::max(isx, 0);
+			Source.y = std::max(isy, 0);
+			Source.w = std::min(iex, imgw - isx);
+			Source.h = std::min(iey, imgh - isy);
+			if (Source.w < 1 || Source.h < 1) { _LastError = "Blit format error"; return; }
+			/*
+			Target.x = x;
+			Target.y = y;
+			Target.w = Source.w * scalex;
+			Target.h = Source.h * scaley;
+			//*/
+			Target.x = AltScreen.X(x);
+			Target.y = AltScreen.Y(y);
+			Target.w = AltScreen.ScaledW(Source.w);
+			Target.h = AltScreen.ScaledW(Source.h);
+			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
+			SDL_SetTextureBlendMode(Textures[frame], (int)_blend);
+			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
+			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], &Source, &Target);
+		}
+
+		int _____TIMAGE::Width() {
+			_LastError = "";
+			if (!Frames()) {
+				_LastError = "<Image>->Width(): No Frames"; return 0;
+			return 0;
+			}
+			int w, h;
+			SDL_QueryTexture(Textures[0], NULL, NULL, &w, &h);
+			return w;
+		}
+
+		int _____TIMAGE::Height() {
+			_LastError = "";
+			if (!Frames()) {
+				_LastError = "<Image>->Height(): No Frames"; return 0;
+				return 0;
+			}
+			int w, h;
+			SDL_QueryTexture(Textures[0], NULL, NULL, &w, &h);
+			return h;
 		}
 
 		_____TIMAGE::_____TIMAGE(std::string file) {
