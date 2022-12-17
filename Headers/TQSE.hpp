@@ -27,5 +27,13 @@ namespace Slyvina {
 
 		std::string AllKeys(); // A list of all known keycodes. This function only exists for debug purposes (for me).
 
+		typedef void (*EventFunction) (SDL_Event* Event);
+
+
+		/// <summary>
+		/// Polls the event and gets all data. Please note, all other readout functions will only return the data based on what this function produces
+		/// </summary>
+		/// <param name="EventCallBack"></param>
+		void Poll(EventFunction EventCallBack = nullptr);
 	}
 }

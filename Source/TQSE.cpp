@@ -23,6 +23,30 @@
 
 namespace Slyvina {
 	namespace TQSE {
+
+		static const int maxmousebuttons = 16;
+
+		static bool TQSE_InitDone = false;
+
+		static bool stAppTerminate = false;
+
+		static std::map<int, bool> stKeyDown;
+		static std::map<int, bool> stKeyHit;
+		static std::map<int, bool> stKeyOldDown;		
+
+		static bool MsButDown[maxmousebuttons];
+		static bool MsButOldDown[maxmousebuttons];
+		static bool MsButHit[maxmousebuttons];
+
+		static bool MsMousePressed[maxmousebuttons];
+		static bool MsMouseReleased[maxmousebuttons];
+
+		static SDL_MouseWheelEvent wheel;
+		static bool wheelused{ false };
+
+		
+
+		// keys
 		static const int numkeys = 240;
 		static const int stAllKeys[numkeys]{
 			SDLK_UNKNOWN, // That is 0,
@@ -281,5 +305,85 @@ namespace Slyvina {
 				ret += Units::TrSPrintF("%03d> %09d", i, stAllKeys[i]);
 			return ret;
 		}
+
+
+		static void MouseClean(bool full = false) {
+			for (unsigned int i = 0; i < maxmousebuttons; i++) {
+				if (full) MsButOldDown[i] = false; else MsButOldDown[i] = MsButDown[i];
+				MsButDown[i] = false;
+				MsButHit[i] = false;
+				MsMousePressed[i] = false;
+				MsMouseReleased[i] = false;
+			}
+		}
+
+		static void KeyClean(bool full = false) {
+			//for (auto& i : stAllKeys) {
+			for (unsigned int j = 0; j < numkeys; j++) {
+				auto i = stAllKeys[j];
+				if (full) {
+					stKeyDown[i] = false;
+					stKeyOldDown[i] = false;
+				} else stKeyOldDown[i] = stKeyDown[i];
+				stKeyHit[i] = false;
+			}
+		}
+
+		void Poll(EventFunction EventCallBack) {
+			// All initiated?
+			if (!TQSE_InitDone) {
+				KeyClean(true);
+				MouseClean(true);				
+				TQSE_InitDone = true;
+			}
+			// Let's get ready to rumble!
+			KeyClean();
+			MouseClean();
+			stAppTerminate = false;
+			wheelused = false;
+			SDL_Event e;
+			while (SDL_PollEvent(&e) != 0) {
+				switch (e.type) {
+				case SDL_KEYDOWN: {
+					auto pkey = e.key.keysym.sym;
+					//std::cout << "KeyDown:" << (int)pkey << "\n"; // debug only
+					stKeyDown[pkey] = true;
+					stKeyHit[pkey] = stKeyDown[pkey] && (!stKeyOldDown[pkey]);
+					//printf("DOWN: %d\n",pkey);
+					break;
+				}
+				case SDL_KEYUP: {
+					auto pkey = e.key.keysym.sym;
+					//printf("UP:   %d\n", pkey);
+					stKeyDown[pkey] = false;
+					break;
+				}
+				case SDL_MOUSEBUTTONDOWN: {
+					auto pbut = e.button.button;
+					MsButDown[pbut] = true;
+					MsButHit[pbut] = MsButDown[pbut] && (!MsButOldDown[pbut]);
+					break;
+				}
+				case SDL_MOUSEBUTTONUP: {
+					auto pbut = e.button.button;
+					MsButDown[pbut] = false;
+					MsMouseReleased[pbut] = true;
+					break;
+				}
+				case SDL_MOUSEWHEEL: {
+					wheel = e.wheel;
+					wheelused = true;
+					break;
+				}
+
+				case SDL_QUIT:
+					stAppTerminate = true;
+					break;
+				}
+				if (EventCallBack) EventCallBack(&e);
+			}
+		}
+
+
 	}
 }
