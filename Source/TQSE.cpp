@@ -17,8 +17,18 @@
 // misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 // EndLic
+
 #include <TQSE.hpp>
+#include <SlyvString.hpp>
 
 namespace Slyvina {
 	namespace TQSE {
+
+		std::string AllKeys() {
+			std::string ret{ "Keycodes\n" };
+			for (int i = 0; i < numkeys; ++i)
+				ret += Units::TrSPrintF("%03d> %09d", i, stAllKeys[i]);
+			return ret;
+		}
+	}
 }
