@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSE.hpp
 // Tricky's Quick SDL Event Handler (header)
-// version: 22.12.16
+// version: 22.12.17
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -18,10 +18,14 @@
 // 3. This notice may not be removed or altered from any source distribution.
 // EndLic
 #pragma once
+#include <sdl.h>
 #include <Slyvina.hpp>
 #include <JCR6_Core.hpp>
 
 namespace Slyvina {
-namespace TQSE{
-}
+	namespace TQSE {
+
+		std::string AllKeys(); // A list of all known keycodes. This function only exists for debug purposes (for me).
+
+	}
 }
