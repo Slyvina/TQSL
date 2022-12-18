@@ -358,3 +358,7 @@ Test
 MKL_*
 *.MKL.*
 MKL.ps1
+
+
+# SDL2 Not here
+SDL2
