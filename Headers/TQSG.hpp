@@ -188,8 +188,8 @@ namespace Slyvina {
 		void SetBlend(SDL_BlendMode _blend);
 		void SetBlitzBlend(BlitzBlend _blend);
 
-		int ScreenWidth();
-		int ScreenHeight();
+		int ScreenWidth(bool pure=false);
+		int ScreenHeight(bool pure=false);
 
 		/// <summary>
 		/// Drawing commands will follow alternate drawing configuration based on the settings here. This can be used to attempt to make look everything the same size regardless of the actual screen sizes. When the values are set to 0 (or a negative number) the acutal screen size will once again be used.
@@ -255,6 +255,16 @@ namespace Slyvina {
 		/// <param name="radius"></param>
 		/// <param name="segments"></param>
 		void Circle(int center_x, int center_y, int radius, int segments = 200);
+
+		/// <summary>
+		/// 
+		/// Draw a circle
+		/// </summary>
+		/// <param name="center_x"></param>
+		/// <param name="center_y"></param>
+		/// <param name="radius"></param>
+		/// <param name="segments"></param>
+		void ACircle(int center_x, int center_y, int radius, int segments = 200);
 
 		/// <summary>
 		/// Draws a rectangle with "AltScreen" settings taken in order.

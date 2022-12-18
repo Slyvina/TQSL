@@ -90,15 +90,17 @@ namespace Slyvina {
 				if (w == 0)
 					ref_x = 1;
 				else
-					ref_x = ((double)ScreenWidth()) / ((double)_w);
+					ref_x = ((double)ScreenWidth(true)) / ((double)_w);
 			}
 			void SetH(int _h) {
 				h = _h;
 				if (h == 0)
 					ref_y = 1;
 				else
-					ref_y = ((double)ScreenHeight()) / ((double)_h);
+					ref_y = ((double)ScreenHeight(true)) / ((double)_h);
 			}
+			int GetW() { return w; }
+			int GetH() { return h; }
 			int X(int x) { if (w <= 0) return x; return (int)floor(x * ref_x); }
 			int Y(int y) { if (h <= 0) return y; return (int)floor(y * ref_y); }
 			int W(int w) { if (w <= 0) return w; return (int)ceil(w * ref_x); }
@@ -263,19 +265,25 @@ namespace Slyvina {
 			}
 		}
 
-		int ScreenWidth() {
+		int ScreenWidth(bool pure) {
 			int w, h;
 			_LastError = "";
 			if (!NeedScreen()) return 0;
 			SDL_GetRendererOutputSize(_Screen->gRenderer, &w, &h);
-			return w;
+			if (pure || AltScreen.GetW() == 0)
+				return w;
+			else
+				return AltScreen.GetW();
 		}
-		int ScreenHeight() {
+		int ScreenHeight(bool pure) {
 			int w, h;
 			_LastError = "";
 			if (!NeedScreen()) return 0;
 			SDL_GetRendererOutputSize(_Screen->gRenderer, &w, &h);
-			return h;
+			if (pure || AltScreen.GetH() == 0)
+				return h;
+			else
+				return AltScreen.GetH();
 		}
 
 		void SetAltScreen(int w, int h) {
@@ -328,6 +336,19 @@ namespace Slyvina {
 
 		void ARect(int x, int y, int w, int h, bool open) {
 			Rect(AltScreen.X(x), AltScreen.Y(y), AltScreen.W(w), AltScreen.H(h), open);
+		}
+
+		void ACircle(int center_x, int center_y, int radius, int segments ) {
+			static double doublepi{ 2 * 3.14 };
+			double progress{ doublepi / (double)std::max(segments,4) };
+			float lastx = center_x, lasty = (radius)+center_y, firstx = lastx, firsty = lasty;
+			for (double i = 0; i < 2 * 3.14; i += progress) {
+				float cx = (sin(i) * radius) + center_x, cy = (cos(i) * radius) + center_y;
+				//SDL_RenderDrawLine(gRenderer, lastx, lasty, cx, cy);
+				Line(AltScreen.X((int)lastx), AltScreen.Y((int)lasty), AltScreen.X((int)cx), AltScreen.Y((int)cy));
+				lastx = cx; lasty = cy;
+			}
+			Line(AltScreen.X((int)lastx), AltScreen.Y((int)lasty), AltScreen.X((int)firstx), AltScreen.Y((int)firsty)); // Make sure the final segment is drawn as well.
 		}
 
 		void Circle(int center_x, int center_y, int radius, int segments) {
