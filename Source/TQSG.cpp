@@ -750,7 +750,7 @@ namespace Slyvina {
 		void _____TIMAGE::Tile(int ax, int ay, int w, int h, int frame, int aix, int aiy) {
 			using namespace std;
 			if (!NeedScreen()) return;
-#ifdef QSG_TileWithAltScreen
+#ifdef TQSG_TileWithAltScreen
 #else
 			auto
 				x = ax + _originx,
@@ -857,7 +857,6 @@ namespace Slyvina {
 			//TQSG_ViewPort(ox, oy, ow, oh);
 			//TQSG_Color(180, 0, 255);
 			//TQSG_Rect(tsx, tsy, tw, th,true);
-
 #endif
 		}
 
