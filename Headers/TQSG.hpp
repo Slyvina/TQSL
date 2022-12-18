@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSG.hpp
 // Tricky's Quick SDL2 Graphics (header)
-// version: 22.12.17
+// version: 22.12.18
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -47,6 +47,8 @@ namespace Slyvina {
 
 		class _____TIMAGE {
 		private:
+			static uint64 img_cnt;
+			uint64 _ID{ ++img_cnt }; // Only serves to make debugging easier on me!
 			std::vector<SDL_Texture*> Textures{};
 		public:
 			/// <summary>
@@ -80,6 +82,8 @@ namespace Slyvina {
 			void LoadFrame(SDL_RWops* buf, bool autofree = true);
 
 			void Blit(int ax, int ay, int isx, int isy, int iex, int iey, int frame = 0);
+			void Blit(int x, int y, int w,int h, int isx, int isy, int iex, int iey, int frame = 0);
+
 
 
 			int Width();
@@ -217,6 +221,33 @@ namespace Slyvina {
 		/// <param name="end_x"></param>
 		/// <param name="end_y"></param>
 		void Line(int start_x, int start_y, int end_x, int end_y);
+
+		/// <summary>
+		/// Draw a rectangle
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="width"></param>
+		/// <param name="height"></param>
+		/// <param name="open"></param>
+		void Rect(int x, int y, int width, int height, bool open = false);
+
+		/// <summary>
+		/// Draw a rectangle
+		/// </summary>
+		/// <param name="r"></param>
+		/// <param name="open"></param>
+		void Rect(SDL_Rect *r, bool open= false);
+
+		/// <summary>
+		/// Draw a circle
+		/// </summary>
+		/// <param name="center_x"></param>
+		/// <param name="center_y"></param>
+		/// <param name="radius"></param>
+		/// <param name="segments"></param>
+		void Circle(int center_x, int center_y, int radius, int segments = 200);
+
 
 		/// <summary>
 		/// Load an image and assigns it to a shared pointer.

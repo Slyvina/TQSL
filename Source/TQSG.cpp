@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 22.12.17
+// version: 22.12.18
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -310,6 +310,35 @@ namespace Slyvina {
 			SDL_RenderDrawLine(_Screen->gRenderer, start_x, start_y, end_x, end_y);
 		}
 
+		void Rect(int x, int y, int width, int height, bool open) {
+			SDL_Rect r{x,y,width,height};
+			Rect(&r, open);
+		}
+
+		void Rect(SDL_Rect *r, bool open) {
+			if (!NeedScreen) return;
+			SDL_SetRenderDrawBlendMode(_Screen->gRenderer, (SDL_BlendMode)_blend);
+			SDL_SetRenderDrawColor(_Screen->gRenderer, _red, _green, _blue, _alpha);
+			if (open)
+				SDL_RenderDrawRect(_Screen->gRenderer, r);
+			else
+				SDL_RenderFillRect(_Screen->gRenderer, r);
+		
+		}
+
+		void Circle(int center_x, int center_y, int radius, int segments) {
+			static double doublepi{ 2 * 3.14 };
+			double progress{ doublepi / (double)std::max(segments,4) };
+			float lastx = center_x, lasty = (radius)+center_y, firstx = lastx, firsty = lasty;
+			for (double i = 0; i < 2 * 3.14; i += progress) {
+				float cx = (sin(i) * radius) + center_x, cy = (cos(i) * radius) + center_y;
+				//SDL_RenderDrawLine(gRenderer, lastx, lasty, cx, cy);
+				Line((int)lastx, (int)lasty, (int)cx, (int)cy);
+				lastx = cx; lasty = cy;
+			}
+			Line(lastx, lasty, firstx, firsty); // Make sure the final segment is drawn as well.
+		}
+
 		TImage LoadImage(std::string file) {
 			_LastError = "";
 			if (!FileExists(file)) {
@@ -429,6 +458,35 @@ namespace Slyvina {
 			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
 			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], &Source, &Target);
 		}
+		void _____TIMAGE::Blit(int ax, int ay, int w, int h, int isx, int isy, int iex, int iey, int frame ) {
+			if (!NeedScreen()) return;
+			auto
+				x = ax + _originx,
+				y = ay + _originy,
+				imgh = Height(),
+				imgw = Width();
+			SDL_Rect
+				Target,
+				Source;
+			//if (altframing) {
+			//	LastError = "Altframing NOT supported for Blitting (and is not likely to be supported in the future, either!)";
+			//	return;
+			//}
+			Source.x = std::max(isx, 0);
+			Source.y = std::max(isy, 0);
+			Source.w = std::min(iex, imgw - isx);
+			Source.h = std::min(iey, imgh - isy);
+			if (Source.w < 1 || Source.h < 1) { _LastError = "Blit format error"; return; }
+			Target.x = AltScreen.X(x);
+			Target.y = AltScreen.Y(y);
+			Target.w = AltScreen.W(w);
+			Target.h = AltScreen.H(h);
+			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
+			SDL_SetTextureBlendMode(Textures[frame], (SDL_BlendMode)_blend);
+			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
+			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], &Source, &Target);
+
+		}
 
 		int _____TIMAGE::Width() {
 			_LastError = "";
@@ -452,7 +510,9 @@ namespace Slyvina {
 			return h;
 		}
 
+		uint64 _____TIMAGE::img_cnt{ 0 };
 		_____TIMAGE::_____TIMAGE(std::string file) {
+			Chat("Image " << _ID << " created by file " << file);
 			if (!NeedScreen()) return;
 			_LastError = "";
 			if (JCR6::_JT_Dir::Recognize(file) != "NONE") {
@@ -492,6 +552,7 @@ namespace Slyvina {
 		}
 
 		_____TIMAGE::_____TIMAGE(JCR6::JT_Dir Res, std::string entry) {
+			Chat("Image " << _ID << " created by JCR resource (entry "<<entry<<")");
 			_LastError = "";
 			if (!Res) { Paniek("Trying to get images from null!"); return; }
 			if (!NeedScreen()) return;
@@ -521,7 +582,10 @@ namespace Slyvina {
 			}
 		}
 
-		_____TIMAGE::~_____TIMAGE() { KillAllFrames(); }
+		_____TIMAGE::~_____TIMAGE() { 
+			Chat("Image " << _ID << " destroyed");
+			KillAllFrames(); 
+		}
 
 }
 }
