@@ -103,6 +103,14 @@ namespace Slyvina {
 			/// <param name="frame"></param>
 			void Draw(int x, int y, int frame = 0);
 
+			/// <summary>
+			/// Draws an image. Now rotation and such are also possible
+			/// </summary>
+			/// <param name="x"></param>
+			/// <param name="y"></param>
+			/// <param name="frame"></param>
+			void XDraw(int x, int y, int frame = 0);
+
 			inline void Hot(int x, int y) { hotx = x; hoty = y; }
 			inline void HotCenter() { Hot(Width() / 2, Height() / 2); }
 			inline void HotBottomCenter() { Hot(Width() / 2, Height()); }
@@ -308,6 +316,19 @@ namespace Slyvina {
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		inline void APlot(int x, int y) { ARect(x, y, 1, 1); }
+
+		/// <summary>
+		/// Set the rotation based on degrees
+		/// </summary>
+		void Rotate(double degrees = 0);
+
+		/// <summary>
+		/// Set the rotation based on randians. (NOTE! SDL2 uses degrees for rotation, so it will NOT be faster to use this in stead of degrees. Only use this if radians is what you got from the start.
+		/// </summary>
+		inline void RotateRad(double radians) {
+			// 1rad ? 180 / pi = 57, 296(deg)
+			Rotate( (radians * 180) / PI);
+		}
 
 
 		void SetMouse(int x, int y);

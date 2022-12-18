@@ -52,7 +52,8 @@ namespace Slyvina {
 			_clsb{ 0 };
 		static double
 			_scalex{ 1.0 },
-			_scaley{ 1.0 };
+			_scaley{ 1.0 },
+			_rotatedeg{ 0 };
 		static Blend
 			_blend{ Blend::ALPHA };
 		static Int32
@@ -107,6 +108,8 @@ namespace Slyvina {
 			int H(int h) { if (h <= 0) return h; return (int)ceil(h * ref_y); }
 			int ScaledW(int w) { return (int)ceil(W(w) * _scalex); }
 			int ScaledH(int h) { return (int)ceil(H(w) * _scalex); }
+			int RX() { return ref_x; }
+			int RY() { return ref_y; }
 		};
 		__AltScreen AltScreen;
 
@@ -465,6 +468,8 @@ namespace Slyvina {
 			SDL_WarpMouseInWindow(_Screen->gWindow, x, y);
 		}
 
+		void Rotate(double degrees) { _rotatedeg = degrees; }
+
 		SDL_Texture* _____TIMAGE::GetFrame(size_t frame) {
 			if (frame >= Frames()) { Paniek(TrSPrintF("Frame exceeeds max. (%d) (there are %d frames)", frame, Frames())); return nullptr; }
 			return Textures[frame];
@@ -699,6 +704,45 @@ namespace Slyvina {
 			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
 			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
 			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], NULL, &Target);
+		}
+
+		void _____TIMAGE::XDraw(int x, int y, int frame) {
+			if (!NeedScreen()) return;
+			int limgflip{ SDL_FLIP_NONE };
+			auto _scalex{ TQSG::_scalex };
+			auto _scaley{ TQSG::_scaley };
+			_LastError = "";
+			if (frame < 0 || frame >= Textures.size()) {
+				char FE[400];
+				sprintf_s(FE, 395, "XDRAW:Texture frame assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
+				_LastError = FE;
+				Paniek(FE);
+				return;
+			}
+			if (_scalex < 0) {
+				_scalex = abs(_scalex);
+				limgflip |= SDL_FLIP_HORIZONTAL;
+			}
+			if (_scaley < 0) {
+				_scaley = abs(_scaley);
+				limgflip |= SDL_FLIP_VERTICAL;
+			}
+			//*
+				SDL_Rect Target{
+					AltScreen.X((x - (hotx * _scalex)) + _originx),
+					AltScreen.Y((y - (hoty * _scaley)) + _originy),
+					AltScreen.W((int)(Width() * _scalex)),
+					AltScreen.H((int)(Height() * _scaley))
+			};
+
+			SDL_Point cpoint{ (int)(hotx * _scalex * AltScreen.RX()),(int)(hoty * _scaley * AltScreen.RY()) };
+
+			//SDL_RenderCopy(gRenderer, Textures[frame], NULL, &Target);
+				SDL_SetTextureBlendMode(Textures[frame], SDLBlend());
+				SDL_SetTextureAlphaMod(Textures[frame], _alpha);
+				SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
+				SDL_RenderCopyEx(_Screen->gRenderer, Textures[frame], NULL, &Target, _rotatedeg, &cpoint, (SDL_RendererFlip)limgflip);
+
 		}
 
 	}
