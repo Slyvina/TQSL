@@ -60,7 +60,7 @@ namespace Slyvina {
 			_originy{ 0 };
 
 
-		static SDL_BlendMode SLDBlend() { return (SDL_BlendMode)_blend; }
+		static SDL_BlendMode SDLBlend() { return (SDL_BlendMode)_blend; }
 
 
 		class __Screen { // A secret class I will use to make sure SDL stuff is always properly disposed.
@@ -80,8 +80,8 @@ namespace Slyvina {
 
 		class __AltScreen {
 		private:
-			int w{0};
-			int h{0};
+			int w{ 0 };
+			int h{ 0 };
 			double ref_x{ 1.0 };
 			double ref_y{ 1.0 };
 		public:
@@ -150,7 +150,7 @@ namespace Slyvina {
 				//Create window
 				_Screen->gWindow = SDL_CreateWindow(Title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 				if (_Screen->gWindow == NULL) {
-					_LastError=TrSPrintF("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+					_LastError = TrSPrintF("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 					Chat(_LastError);
 					_Screen = nullptr;
 					return false;//success = false;
@@ -163,7 +163,7 @@ namespace Slyvina {
 					}
 					_Screen->gRenderer = SDL_CreateRenderer(_Screen->gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 					if (_Screen->gRenderer == NULL) {
-						_LastError=TrSPrintF("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+						_LastError = TrSPrintF("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
 						Chat(_LastError);
 						//SDL_DestroyWindow(gWindow);
 						_Screen = nullptr;
@@ -256,8 +256,8 @@ namespace Slyvina {
 				SetBlend(Blend::ADDITIVE);
 				break;
 			default:
-				
-				_LastError= "ERROR! Unknown blitz blend (" +std::to_string(i)+ ")";
+
+				_LastError = "ERROR! Unknown blitz blend (" + std::to_string(i) + ")";
 				Chat(_LastError);
 				break;
 			}
@@ -311,11 +311,11 @@ namespace Slyvina {
 		}
 
 		void Rect(int x, int y, int width, int height, bool open) {
-			SDL_Rect r{x,y,width,height};
+			SDL_Rect r{ x,y,width,height };
 			Rect(&r, open);
 		}
 
-		void Rect(SDL_Rect *r, bool open) {
+		void Rect(SDL_Rect* r, bool open) {
 			if (!NeedScreen) return;
 			SDL_SetRenderDrawBlendMode(_Screen->gRenderer, (SDL_BlendMode)_blend);
 			SDL_SetRenderDrawColor(_Screen->gRenderer, _red, _green, _blue, _alpha);
@@ -323,7 +323,11 @@ namespace Slyvina {
 				SDL_RenderDrawRect(_Screen->gRenderer, r);
 			else
 				SDL_RenderFillRect(_Screen->gRenderer, r);
-		
+
+		}
+
+		void ARect(int x, int y, int w, int h, bool open) {
+			Rect(AltScreen.X(x), AltScreen.Y(y), AltScreen.W(w), AltScreen.H(h), open);
 		}
 
 		void Circle(int center_x, int center_y, int radius, int segments) {
@@ -403,7 +407,7 @@ namespace Slyvina {
 		}
 
 		void _____TIMAGE::LoadFrame(size_t frame, SDL_RWops* data, bool autofree) {
-			_LastError = "";		
+			_LastError = "";
 			if (frame >= Textures.size()) {
 				char FE[400];
 				sprintf_s(FE, 395, "Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
@@ -458,7 +462,7 @@ namespace Slyvina {
 			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
 			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], &Source, &Target);
 		}
-		void _____TIMAGE::Blit(int ax, int ay, int w, int h, int isx, int isy, int iex, int iey, int frame ) {
+		void _____TIMAGE::Blit(int ax, int ay, int w, int h, int isx, int isy, int iex, int iey, int frame) {
 			if (!NeedScreen()) return;
 			auto
 				x = ax + _originx,
@@ -492,7 +496,7 @@ namespace Slyvina {
 			_LastError = "";
 			if (!Frames()) {
 				_LastError = "<Image>->Width(): No Frames"; return 0;
-			return 0;
+				return 0;
 			}
 			int w, h;
 			SDL_QueryTexture(Textures[0], NULL, NULL, &w, &h);
@@ -523,11 +527,11 @@ namespace Slyvina {
 					if (ext == "PNG" || ext == "BMP" || ext == "JPG" || ext == "JPEG") {
 						auto jbuf{ J->B(Ent->Name()) };
 						if (JCR6::Last()->Error) {
-							_LastError = "JCR6 Error: " + JCR6::Last()->ErrorMessage + "\n (File: " + file + "; Entry:" + Ent->Name()+")";
+							_LastError = "JCR6 Error: " + JCR6::Last()->ErrorMessage + "\n (File: " + file + "; Entry:" + Ent->Name() + ")";
 							return;
 						}
 						auto buf{ SDL_RWFromMem(jbuf->Direct(),Ent->RealSize()) };
-						
+
 						LoadFrame(buf);
 					}
 				}
@@ -552,7 +556,7 @@ namespace Slyvina {
 		}
 
 		_____TIMAGE::_____TIMAGE(JCR6::JT_Dir Res, std::string entry) {
-			Chat("Image " << _ID << " created by JCR resource (entry "<<entry<<")");
+			Chat("Image " << _ID << " created by JCR resource (entry " << entry << ")");
 			_LastError = "";
 			if (!Res) { Paniek("Trying to get images from null!"); return; }
 			if (!NeedScreen()) return;
@@ -582,10 +586,30 @@ namespace Slyvina {
 			}
 		}
 
-		_____TIMAGE::~_____TIMAGE() { 
+		_____TIMAGE::~_____TIMAGE() {
 			Chat("Image " << _ID << " destroyed");
-			KillAllFrames(); 
+			KillAllFrames();
 		}
 
-}
+		void _____TIMAGE::StretchDraw(int x, int y, int w, int h, int frame) {
+			if (!NeedScreen()) return;
+			_LastError = "";
+			if (frame < 0 || frame >= Textures.size()) {
+				char FE[400];
+				sprintf_s(FE, 395, "Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
+				_LastError = FE;
+				return;
+			}
+			SDL_Rect Target;
+			Target.x = AltScreen.X(x + _originx);
+			Target.y = AltScreen.Y(y + _originy);
+			Target.w = AltScreen.W(w);
+			Target.h = AltScreen.H(h);
+			SDL_SetTextureBlendMode(Textures[frame], SDLBlend());
+			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
+			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
+			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], NULL, &Target);
+		}
+
+	}
 }

@@ -84,7 +84,15 @@ namespace Slyvina {
 			void Blit(int ax, int ay, int isx, int isy, int iex, int iey, int frame = 0);
 			void Blit(int x, int y, int w,int h, int isx, int isy, int iex, int iey, int frame = 0);
 
-
+			/// <summary>
+			/// Draws and stretches an image to fit in the set square. Please note, hot spots, format ratios and all that kind of stuff is ignored. It just draws in the square set by you, and nothing more.
+			/// </summary>
+			/// <param name="x"></param>
+			/// <param name="y"></param>
+			/// <param name="w"></param>
+			/// <param name="h"></param>
+			/// <param name="frame"></param>
+			void StretchDraw(int x, int y, int w, int h, int frame = 0);
 
 			int Width();
 			int Height();
@@ -247,6 +255,12 @@ namespace Slyvina {
 		/// <param name="radius"></param>
 		/// <param name="segments"></param>
 		void Circle(int center_x, int center_y, int radius, int segments = 200);
+
+		/// <summary>
+		/// Draws a rectangle with "AltScreen" settings taken in order.
+		/// Please note, when you choose "open" the lines won't get thicker or thinner when the resolution gets heigher or lower.
+		/// </summary>
+		void ARect(int x, int y, int w, int h, bool open = false);
 
 
 		/// <summary>
