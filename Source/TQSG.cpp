@@ -751,6 +751,116 @@ namespace Slyvina {
 			using namespace std;
 			if (!NeedScreen()) return;
 #ifdef TQSG_TileWithAltScreen
+			auto
+				x = ax + _originx,
+				y = ay + _originy,
+				ix = aix,
+				iy = aiy;
+
+			_LastError = "";
+			// todo: Fix issues with negative ix
+			/*???
+			if (iy>0)
+				iy = (y + (Height() - iy)) % Height();
+			if (ix > 0)
+				//ix = (x+ (Width() - ix)) % Width();
+				//ix = (x - (Width() + ix)) % Width();
+				ix = -(ix % Width());
+				//*/
+			if (ix < 0) {
+				//cout << "neg x:" << ix << " to ";
+				ix = (x - (Width() + ix)) % Width();
+				//cout << ix << "\n";
+			}
+			if (iy < 0) {
+				//cout << "neg x:" << ix << " to ";
+				iy = (y - (Height() + iy)) % Height();
+				//cout << ix << "\n";
+			}
+			//int ox, oy, ow, oh;
+			//TQSG_GetViewPort(&ox, &oy, &ow, &oh);
+			int tsx, tsy, tex, tey, tw, th;
+			int imgh = Height();
+			int imgw = Width();
+			/*
+			tsx = max(ox, x);
+			tsy = max(oy, y);
+			tex = min(ow + ox, x + w); tw = tex - tsx;
+			tey = min(oh + oy, y + h); th = tey - tsy;
+			*/
+			tsx = x;
+			tsy = y;
+			tex = w + x;
+			tey = h + y;
+			tw = w;
+			th = h;
+			if (tw <= 0 || th <= 0) return; // Nothing to do but getting bugged!
+			//cout << "TILE: Rect("<<x<<","<<y<<") "<<w<<"x"<<h<<" "<<"\n";
+			//cout << "\tViewPort(" << tsx << "," << tsy << "," << tw << "[" << tex << "]" << "," << th << "[" << tey << "])\n";
+			SDL_Rect Target, Source;
+			//TQSG_ViewPort(tsx, tsy, tw, th);
+			//TQSG_Rect(tsx, tsy, tw, th);
+			//cout << "for (int dy = tsy("<<tsy<<") - iy("<<iy<<")(" << (tsy - iy) << "); dy < tey(" << tey << "); dy += imgh(" << imgh << ")) \n";
+			SDL_SetTextureColorMod(Textures[frame], _red, _green, _alpha);
+			SDL_SetTextureBlendMode(Textures[frame], SDLBlend());
+			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
+			for (int dy = tsy - iy; dy < tey; dy += imgh) {
+				//cout << "(" << x << "," << y << ")\tdy:" << dy << "; tsy:" << tsy << " imgh:" << imgh << " th:" << th << "\n";
+				for (int dx = tsx - ix; dx < tex; dx += imgw) {
+					//cout << "\t\tDrawTile(" << dx << "," << dy << "," << imgw << "," << imgh << ")\n";
+					Target.x = dx;
+					Target.y = dy;
+					Target.w = imgw;
+					Target.h = imgh;
+					Source.x = 0;
+					Source.y = 0;
+					Source.w = imgw;
+					Source.h = imgh;
+					//cout << "tgt (" << Target.x << "," << Target.y << ") " << Target.w << "x" << Target.h<<"\n";
+					//cout << "src (" << Source.x << "," << Source.y << ") " << Source.w << "x" << Source.h<<"; Frame:"<<frame<<"\n\n";
+					//cout << "("<<x<<","<<y<<")\tdx:" << dx << "; tsx:" << tsx << " imgw:" << imgw << " tw:" << tw<<"\n";
+					if (dx >= tsx && (dx + imgw) > tex) {
+						Source.w = imgw - ((dx + imgw) - tex);
+						Target.w = Source.w; //(dx + imgw) - tex;
+						//cout << "aw " << Source.w << "\n";
+					} else if (dx <= tsx) {
+						Source.x = tsx - dx;
+						Source.w = imgw - Source.x;
+						Target.x = tsx;
+						Target.w = Source.w;
+					}
+					if (dy <= tsy && dy + imgh > tey) {
+						Source.y = tsy - dy;
+						Source.h = th;
+						Target.y = tsy;
+						Target.h = th;
+					} else if (dy >= tsy && (dy + imgh) > tey) {
+						Source.h = imgh - ((dy + imgh) - tey);
+						Target.h = Source.h;//(dy + imgh) - tey;
+						//cout << "ah " << Source.h << "\t" << dy << "\tImgHeight:>" << imgh << "; img-maxy::>" << (dy + imgh) << "; rect-maxy::>" << tey << "=="<<(h+y)<<"\n";
+					} else if (dy <= tsy) {
+						Source.y = tsy - dy;
+						Source.h = imgh - Source.y;
+						Target.y = tsy;
+						Target.h = Source.h;
+					}
+
+
+					// TQSG_Rect(dx, dy, imgw, imgh);//debug
+					if (frame < 0 || frame >= Textures.size()) {
+						Paniek("<IMAGE>.Tile(" + to_string(x) + "," + to_string(y) + "," + to_string(w) + "," + to_string(h) + "," + to_string(frame) + "): Out of frame boundaries (framecount: " + to_string(Textures.size()) + ")"); return;
+					}
+					Target.x = AltScreen.X(Target.x);
+					Target.y = AltScreen.Y(Target.y);
+					Target.w = AltScreen.X(Target.w);
+					Target.h = AltScreen.Y(Target.h);
+					SDL_RenderCopy(_Screen->gRenderer, Textures[frame], &Source, &Target);
+				}
+			}
+			//TQSG_ViewPort(ox, oy, ow, oh);
+			//TQSG_Color(180, 0, 255);
+			//TQSG_Rect(tsx, tsy, tw, th,true);
+
 #else
 			auto
 				x = ax + _originx,
