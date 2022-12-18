@@ -111,6 +111,18 @@ namespace Slyvina {
 			/// <param name="frame"></param>
 			void XDraw(int x, int y, int frame = 0);
 
+			/// <summary>
+			/// Tiles an image over an area (this routine is not super stable, but it should do its job.
+			/// </summary>
+			/// <param name="ax"></param>
+			/// <param name="ay"></param>
+			/// <param name="w"></param>
+			/// <param name="h"></param>
+			/// <param name="frame"></param>
+			/// <param name="aix"></param>
+			/// <param name="aiy"></param>
+			void Tile(int ax, int ay, int w, int h, int frame=0, int aix=0, int aiy=0);
+
 			inline void Hot(int x, int y) { hotx = x; hoty = y; }
 			inline void HotCenter() { Hot(Width() / 2, Height() / 2); }
 			inline void HotBottomCenter() { Hot(Width() / 2, Height()); }
