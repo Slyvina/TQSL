@@ -460,6 +460,11 @@ namespace Slyvina {
 			return std::unique_ptr<_____TIMAGE>(ret);
 		}
 
+		void SetMouse(int x, int y) {
+			if (!NeedScreen) return;
+			SDL_WarpMouseInWindow(_Screen->gWindow, x, y);
+		}
+
 		SDL_Texture* _____TIMAGE::GetFrame(size_t frame) {
 			if (frame >= Frames()) { Paniek(TrSPrintF("Frame exceeeds max. (%d) (there are %d frames)", frame, Frames())); return nullptr; }
 			return Textures[frame];

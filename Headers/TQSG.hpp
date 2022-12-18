@@ -310,6 +310,9 @@ namespace Slyvina {
 		inline void APlot(int x, int y) { ARect(x, y, 1, 1); }
 
 
+		void SetMouse(int x, int y);
+
+
 		/// <summary>
 		/// Load an image and assigns it to a shared pointer.
 		/// This routine is able to read both single picture as .jpbf files (JCR Picture Bundle File).
