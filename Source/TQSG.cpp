@@ -137,18 +137,29 @@ namespace Slyvina {
 
 		void CloseGraphics() { _Screen = nullptr; }
 
-		static bool TrueGraphics(int width, int height, bool fullscreen, std::string Title) {
-			Chat(TrSPrintF("Starting graphics screen: %dx%d; fullscreen=%d\n", width, height, fullscreen));
-			_LastError = "";
-			_Screen = std::make_unique<__Screen>();
-
-			//Initialize SDL
+		inline bool NeedSDL() {
+			static bool Done{ false };
+			if (Done) return true;
+			Chat("Init SDL2");
 			if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
 				_LastError = TrSPrintF("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 				Chat(_LastError);
 				_Screen = nullptr;
 				return false; //success = false;
 			} else {
+				Chat("=> Success");
+				Done = true;
+				return true;
+			}
+		}
+
+		static bool TrueGraphics(int width, int height, bool fullscreen, std::string Title) {
+			Chat(TrSPrintF("Starting graphics screen: %dx%d; fullscreen=%d\n", width, height, fullscreen));
+			_LastError = "";
+			_Screen = std::make_unique<__Screen>();
+
+			//Initialize SDL
+			if (NeedSDL()) {
 				//Create window
 				_Screen->gWindow = SDL_CreateWindow(Title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 				if (_Screen->gWindow == NULL) {
@@ -394,6 +405,38 @@ namespace Slyvina {
 			if (_LastError.size()) { delete ret; return nullptr; }
 			return std::shared_ptr<_____TIMAGE>(ret);
 		}
+
+		void Plot(int x, int y) {
+			_LastError = "";
+			if (!NeedScreen()) return;
+			SDL_SetRenderDrawColor(_Screen->gRenderer, _red, _green, _blue, _alpha);
+			SDL_RenderDrawPoint(_Screen->gRenderer, x, y);
+		}
+
+		int32 DesktopWidth() {
+			_LastError = "";
+			SDL_DisplayMode mode;
+			if (!NeedSDL()) return 0;
+			if (!SDL_GetDesktopDisplayMode(0, &mode)) _LastError = SDL_GetError();			
+			return mode.w;
+		}
+
+		int32 DesktopHeight() {
+			_LastError = "";
+			SDL_DisplayMode mode;
+			if (!NeedSDL()) return 0;
+			if (!SDL_GetDesktopDisplayMode(0, &mode)) _LastError = SDL_GetError();
+			return mode.h;
+		}
+
+		void TQSG_DesktopSize(int& w, int& h) {
+			SDL_DisplayMode mode;
+			SDL_GetDesktopDisplayMode(0, &mode);
+			w = mode.w;
+			h = mode.h;
+		}
+
+		
 
 		TImage LoadImage(std::string JCRFile, std::string entry) {
 			_LastError = "";

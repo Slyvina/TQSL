@@ -188,8 +188,18 @@ namespace Slyvina {
 		void SetBlend(SDL_BlendMode _blend);
 		void SetBlitzBlend(BlitzBlend _blend);
 
+		/// <summary>
+		/// Screen width (in graphics mode only). When pure is set to true, the altscreen settings will be ignored
+		/// </summary>
 		int ScreenWidth(bool pure=false);
+
+		/// <summary>
+		/// Screen height (in graphics mode only). When pure is set to true, the altscreen settings will be ignored
+		/// </summary>
 		int ScreenHeight(bool pure=false);
+
+		int32 DesktopWidth();
+		int32 DesktopHeight();
 
 		/// <summary>
 		/// Drawing commands will follow alternate drawing configuration based on the settings here. This can be used to attempt to make look everything the same size regardless of the actual screen sizes. When the values are set to 0 (or a negative number) the acutal screen size will once again be used.
@@ -271,6 +281,20 @@ namespace Slyvina {
 		/// Please note, when you choose "open" the lines won't get thicker or thinner when the resolution gets heigher or lower.
 		/// </summary>
 		void ARect(int x, int y, int w, int h, bool open = false);
+
+		/// <summary>
+		/// Plot a pixel
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		void Plot(int x, int y);
+
+		/// <summary>
+		/// Plot a pixel with alt screen settings in mind (and yeah, this pixel WILL get thicker or thinner based on the altscreen resolutions).
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		inline void APlot(int x, int y) { ARect(x, y, 1, 1); }
 
 
 		/// <summary>
