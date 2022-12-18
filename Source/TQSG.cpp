@@ -217,15 +217,15 @@ namespace Slyvina {
 		}
 
 		void SetCLSColorHSV(double h, double s, double v) {
-			hsv s{ h,s,v };
-			rgb t{ hsv2rgb(s) };
+			hsv sr{ h,s,v };
+			rgb t{ hsv2rgb(sr) };
 			SetCLSColor((byte)floor(t.r * 255), (byte)floor(t.g * 255), (byte)floor(t.b * 255));
 		}
 
 		void Cls() {
 			Uint8  r, g, b, a;
 			_LastError = "";
-			if (_Screen) {
+			if (!_Screen) {
 				_LastError = "CLS(): Impossible to comply without a graphics screen";
 				return;
 			}
@@ -302,6 +302,12 @@ namespace Slyvina {
 			while (minticks && (SDL_GetTicks() - oud < mt)) SDL_Delay(1);
 			oud = SDL_GetTicks();
 			SDL_RenderPresent(_Screen->gRenderer);
+		}
+
+		void Line(int start_x, int start_y, int end_x, int end_y) {
+			if (!NeedScreen()) return;
+			SDL_SetRenderDrawColor(_Screen->gRenderer, _red, _green, _blue, _alpha);
+			SDL_RenderDrawLine(_Screen->gRenderer, start_x, start_y, end_x, end_y);
 		}
 
 		TImage LoadImage(std::string file) {
@@ -419,7 +425,7 @@ namespace Slyvina {
 			Target.w = AltScreen.ScaledW(Source.w);
 			Target.h = AltScreen.ScaledW(Source.h);
 			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
-			SDL_SetTextureBlendMode(Textures[frame], (int)_blend);
+			SDL_SetTextureBlendMode(Textures[frame], (SDL_BlendMode)_blend);
 			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
 			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], &Source, &Target);
 		}

@@ -210,6 +210,15 @@ namespace Slyvina {
 		void Flip(int minticks=-1);
 
 		/// <summary>
+		/// Draw a line
+		/// </summary>
+		/// <param name="start_x"></param>
+		/// <param name="start_y"></param>
+		/// <param name="end_x"></param>
+		/// <param name="end_y"></param>
+		void Line(int start_x, int start_y, int end_x, int end_y);
+
+		/// <summary>
 		/// Load an image and assigns it to a shared pointer.
 		/// This routine is able to read both single picture as .jpbf files (JCR Picture Bundle File).
 		/// </summary>
