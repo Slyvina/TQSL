@@ -50,6 +50,7 @@ namespace Slyvina {
 			static uint64 img_cnt;
 			uint64 _ID{ ++img_cnt }; // Only serves to make debugging easier on me!
 			std::vector<SDL_Texture*> Textures{};
+			int hotx{ 0 }, hoty{ 0 };
 		public:
 			/// <summary>
 			/// Get the number of frames
@@ -93,6 +94,18 @@ namespace Slyvina {
 			/// <param name="h"></param>
 			/// <param name="frame"></param>
 			void StretchDraw(int x, int y, int w, int h, int frame = 0);
+
+			/// <summary>
+			/// Draws an images. Hotspots and scale settings will be taken into account. 
+			/// </summary>
+			/// <param name="x"></param>
+			/// <param name="y"></param>
+			/// <param name="frame"></param>
+			void Draw(int x, int y, int frame = 0);
+
+			inline void Hot(int x, int y) { hotx = x; hoty = y; }
+			inline void HotCenter() { Hot(Width() / 2, Height() / 2); }
+			inline void HotBottomCenter() { Hot(Width() / 2, Height()); }
 
 			int Width();
 			int Height();

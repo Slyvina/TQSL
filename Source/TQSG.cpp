@@ -675,5 +675,26 @@ namespace Slyvina {
 			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], NULL, &Target);
 		}
 
+		void _____TIMAGE::Draw(int x, int y, int frame) {
+			_LastError = "";
+			if (!NeedScreen()) return;
+			if (frame < 0 || frame >= Textures.size()) {
+				char FE[400];
+				sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());
+				//LastError = FE;
+				Paniek(FE);
+				return;
+			}
+			SDL_Rect Target;
+			Target.x = AltScreen.X((x - (int)ceil(hotx * _scalex)) + _originx);
+			Target.y = AltScreen.Y((y - (int)ceil(hoty * _scaley)) + _originy);
+			Target.w = AltScreen.W((int)ceil(Width() * _scalex));
+			Target.h = AltScreen.H((int)ceil(Height() * _scaley));
+			SDL_SetTextureBlendMode(Textures[frame], SDLBlend());
+			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
+			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
+			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], NULL, &Target);
+		}
+
 	}
 }
