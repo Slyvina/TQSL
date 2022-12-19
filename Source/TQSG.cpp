@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 22.12.18
+// version: 22.12.19
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -34,6 +34,7 @@
 #include <SlyvString.hpp>
 #include <SlyvHSVRGB.hpp>
 #include <SlyvStream.hpp>
+#include <SlyvSTOI.hpp>
 
 using namespace Slyvina::Units;
 
@@ -116,6 +117,8 @@ namespace Slyvina {
 		__AltScreen AltScreen;
 
 		std::string LastError() { return _LastError; }
+
+
 #pragma region Paniek
 		static TQSG_PanicType TQSG_Panic{ nullptr };
 		static void DefaultPanic(std::string str) {
@@ -132,6 +135,7 @@ namespace Slyvina {
 		inline bool NeedScreen() { if (!_Screen) { Paniek("Action requiring a graphics screen"); return false; } else return true; }
 #pragma endregion
 
+#pragma region GeneralCommands
 		void SetAlpha(byte a) { _alpha = a; _LastError = ""; }
 		void SetColor(byte r, byte g, byte b) { _red = r; _green = g; _blue = b; _LastError = ""; }
 		void SetColorHSV(double Hue, double Sat, double Value) {
@@ -406,10 +410,36 @@ namespace Slyvina {
 		}
 
 		TImage LoadImage(JCR6::JT_Dir J, std::string entry) {
+			_LastError = "";
 			auto ret{ new _____TIMAGE(J,entry) };
 			if (_LastError.size()) { delete ret; return nullptr; }
 			return std::shared_ptr<_____TIMAGE>(ret);
 		}
+
+		TImageFont LoadImageFont(JCR6::JT_Dir Res, std::string path) {
+			_LastError = "";
+			return std::shared_ptr<_____TIMAGEFONT>(new _____TIMAGEFONT(Res,path));
+		}
+
+		TUImageFont LoadUImageFont(JCR6::JT_Dir Res, std::string path) {
+			_LastError = "";
+			return std::unique_ptr<_____TIMAGEFONT>(new _____TIMAGEFONT(Res, path));
+		}
+
+		TImageFont LoadImageFont(std::string JCRRes, std::string path) {
+			_LastError = "";
+			auto J = JCR6::JCR6_Dir(JCRRes);
+			if (JCR6::Last()->Error) { _LastError = "LoadImageFont(\"" + JCRRes + "\", \"" + path + "\"): " + JCR6::Last()->ErrorMessage; return nullptr; }
+			return std::shared_ptr<_____TIMAGEFONT>(new _____TIMAGEFONT(J, path));
+		}
+
+		TUImageFont LoadUImageFont(std::string JCRRes, std::string path) {
+			_LastError = "";
+			auto J = JCR6::JCR6_Dir(JCRRes);
+			if (JCR6::Last()->Error) { _LastError = "LoadImageFont(\"" + JCRRes + "\", \"" + path + "\"): " + JCR6::Last()->ErrorMessage; return nullptr; }
+			return std::unique_ptr<_____TIMAGEFONT>(new _____TIMAGEFONT(J, path));
+		}
+
 
 		void Plot(int x, int y) {
 			_LastError = "";
@@ -471,6 +501,9 @@ namespace Slyvina {
 		}
 
 		void Rotate(double degrees) { _rotatedeg = degrees; }
+#pragma endregion
+
+#pragma region TImage
 
 		SDL_Texture* _____TIMAGE::GetFrame(size_t frame) {
 			if (frame >= Frames()) { Paniek(TrSPrintF("Frame exceeeds max. (%d) (there are %d frames)", frame, Frames())); return nullptr; }
@@ -969,6 +1002,242 @@ namespace Slyvina {
 			//TQSG_Rect(tsx, tsy, tw, th,true);
 #endif
 		}
+#pragma endregion
 
+#pragma region ImageFont
+		const int TryFmtMax = 4;
+		char TryFmt[TryFmtMax][200]{
+			"%d.png",
+			"%03d.png",
+			"%d.bmp",
+			"%03d.bmp"
+		};
+
+		class _____TIMAGEFONTCHAR {
+		public:
+			_____TIMAGEFONT* Parent{ nullptr };
+			SDL_Texture* ChImg{nullptr};
+			int
+				hotx{ 0 },
+				hoty{ 0 },
+				width{ 0 },
+				height{ 0 };
+			uint64
+				defs{ 0 };
+			~_____TIMAGEFONTCHAR() {
+				if (ChImg) SDL_DestroyTexture(ChImg);
+			}
+			_____TIMAGEFONTCHAR(_____TIMAGEFONT* Ouwe, SDL_Texture* _Img, int _x=0, int _y=0, int _w=0, int _h=0) {
+				Parent = Ouwe;
+				ChImg = _Img;
+				hotx = _x;
+				hoty = _y;
+				width = _w;
+				height = _h;
+				if (ChImg && (width <= 0 || height <= 0)) {
+					SDL_QueryTexture(ChImg, NULL, NULL, &width, &height);
+				}
+				defs = 1;
+				Chat("Character made! ImgPointer(" << (uint64)ChImg << ") hot(" << hotx << "," << hoty << ");  Size: " << width << "x" << height);
+			}
+			void Draw(int x,int y){
+				if (!ChImg) return;
+				Chat("Draw char at (" << x << "," << y << ")\n"); // debug only!
+				int _w, _h;
+				SDL_QueryTexture(ChImg, NULL, NULL, &_w, &_h);
+				SDL_Rect Target;
+				Target.x = AltScreen.X(x + _originx);
+				Target.y = AltScreen.Y(y + _originy);
+				Target.w = AltScreen.W(_w);
+				Target.h = AltScreen.H(_h);
+				SDL_SetTextureBlendMode(ChImg, SDLBlend());
+				SDL_SetTextureAlphaMod(ChImg, _alpha);
+				SDL_SetTextureColorMod(ChImg, _red, _green, _blue);
+				SDL_RenderCopy(_Screen->gRenderer, ChImg, NULL, &Target);
+			}
+		};
+
+		void _____TIMAGEFONT::KillAll() {
+			/*
+			for (auto& victim : CharPics) {
+				victim.second->defs--;
+				if (!victim.second->defs) delete victim.second;
+			}
+			//*/
+		}
+		//_____TIMAGEFONTCHAR* _____TIMAGEFONT::GetChar(uint32 c) {
+		std::shared_ptr<_____TIMAGEFONTCHAR> _____TIMAGEFONT::GetChar(int c) {
+			if (!NeedScreen()) return nullptr;
+			//if (!CharPics) { Paniek("Internal error!"); return nullptr; }
+			//Chat("Getting char #" << c); // ???
+			//if (!CharPics.count(c)) {
+			if (!CharPics[c]){
+				std::string WantFile{ "" };
+				int x{ 0 }, y{ 0 }, w{ 0 }, h{ 0 };
+				if (Alt) {
+					auto Cat{ TrSPrintF("%04x",c) };
+					if (Alt->HasValue(Cat, "LINK")) {
+						auto Lch = GetChar(ToInt(Alt->Value(Cat, "LINK")));
+						Lch->defs++;
+						CharPics[c] = Lch;
+						return Lch;
+					}
+					if (Alt->HasValue(Cat, "Entry")) {
+						WantFile = pathprefix+Alt->Value(Cat, "Entry");
+					}
+					if (Alt->HasValue(Cat, "HOTX")) x = ToInt(Alt->Value(Cat, "HOTX"));
+					if (Alt->HasValue(Cat, "HOTY")) y = ToInt(Alt->Value(Cat, "HOTY"));
+					if (Alt->HasValue(Cat, "WIDTH")) w = ToInt(Alt->Value(Cat, "WIDTH"));
+					if (Alt->HasValue(Cat, "HEIGHT")) w = ToInt(Alt->Value(Cat, "HEIGHT"));
+				}
+				if (!WantFile.size()) {
+					for (byte i = 0; i < TryFmtMax; i++) {
+						auto fn{ pathprefix + TrSPrintF(TryFmt[i],c) };						
+						if (FntRes->EntryExists(fn)) {
+							Chat("For character #" << c << ", file " << fn << " has been found!");
+							WantFile = fn;
+							break;
+						}
+					}
+				}
+				if (!WantFile.size()) {
+					std::cout << "WARNING! No suitable character image found for #" << c << ".\n";
+					//CharPics[c] = new _____TIMAGEFONTCHAR(this, nullptr);
+					CharPics[c] = std::make_shared<_____TIMAGEFONTCHAR>(this, nullptr);
+				} else {
+
+					auto buf = FntRes->B(WantFile);
+					auto rwo = SDL_RWFromMem(buf->Direct(), buf->Size());
+					auto tex = IMG_LoadTexture_RW(_Screen->gRenderer, rwo, true);
+					//CharPics[c] = new _____TIMAGEFONTCHAR(this, tex, x, y, w, h);
+					CharPics[c] = std::make_shared< _____TIMAGEFONTCHAR>(this, tex, x, y, w, h);
+				}
+				if (spaceavg) {
+					uint32 count{ 0 }, total{ 0 };
+					for (auto i = 0; i < 256 * 256;i++) {
+						if (CharPics[i]) {
+							count++;
+							total += CharPics[i]->width;
+						}
+					}
+					if (count)	spacewidth = total / count;
+				}
+			}			
+			return CharPics[c];
+		}
+		//_____TIMAGEFONTCHAR* _____TIMAGEFONT::GetChar(byte b1, byte b2) {
+		std::shared_ptr<_____TIMAGEFONTCHAR> _____TIMAGEFONT::GetChar(byte b1, byte b2) {
+			return GetChar(((uint64)b1 * 256) + (uint64)b2);
+		}
+
+		void _____TIMAGEFONT::TW(std::string Text, bool Draw, int& x, int& y) {
+			int
+				_x = x,
+				_y = y,
+				_lastmove = 0,
+				_lineheight = 0;
+
+			byte
+				dchar{ 0 };
+			for (size_t pos = 0; pos < Text.size(); ++pos) {
+				if (dchar) dchar--; else {
+					switch (Text[pos]) {
+					case '\0': goto Klaar; // I doubt this will ever be possible, but it's rather a safty precaution.
+					case '\1':
+					case '\2':
+					case '\3':
+					case '\4':
+					case '\5':
+					case '\6':
+					case '\7':
+						break;
+					case '\t':
+						do {} while ((++x) % TabWidth != 0);
+						break;
+					case '\n':
+						_y += _lineheight;
+						_lineheight = 0;
+						_x = x;
+						break;
+					case '\r':
+						_x = x;
+						break;
+					case '|': {
+						if (pos + 2 >= Text.size()) { Paniek("Double char line end error!"); }
+						auto ch{ GetChar((byte)Text[pos + 1],(byte)Text[pos + 2]) };
+						dchar = 2;
+						if (Draw) ch->Draw(_x, _y);
+						_x += ch->width;
+						_lineheight = std::max(_lineheight, ch->height);
+					} break;
+					case ' ':
+						_x += spacewidth;
+						break;
+					default: {
+						auto ch{ GetChar((int32)Text[pos]) };
+						//Chat("Draw (" << ch << ") " << Draw << "!\n"); // debug only
+						if (Draw) ch->Draw(_x, _y);
+						_x += ch->width;
+						_lineheight = std::max(_lineheight, ch->height);
+					} break;
+					}
+				}
+			}
+			Klaar:
+			if (!Draw) { x = _x; y = _y+_lineheight; }
+		}
+		int _____TIMAGEFONT::Width(std::string Text) {
+			int rw, rh;
+			TW(Text, false, rw, rh);
+			return rw;
+		}
+
+		_____TIMAGEFONT::_____TIMAGEFONT(JCR6::JT_Dir Res, std::string p) {
+			using namespace Units;
+			//CharPics.clear();
+			//CharPics[0] = std::make_shared <_____TIMAGEFONTCHAR>(this, nullptr); // Let's force something
+			for (int i = 0; i < 256 * 256; i++) CharPics[i] = nullptr; // Make sure all instances are null pointers.
+			if (p.size()) {
+				p = ChReplace(p, '\\', '/');
+				if (!Suffixed(p, "/")) p += "/";
+			}
+			FntRes = Res;
+			pathprefix = p;
+		}
+		int _____TIMAGEFONT::Height(std::string Text) {
+			int rw, rh;
+			TW(Text, false, rw, rh);
+			return rh;
+
+		}
+		void _____TIMAGEFONT::Text(std::string Text, int x, int y, Align ax,Align ay) {
+			int sx{0}, sy{0};
+			switch (ax) {
+			case Align::Left:
+				sx = x; break;
+			case Align::Right:
+				sx = Width(Text) - x;
+				break;
+			case Align::Center:
+				sx = (Width(Text) / 2) - (x / 2);
+				break;
+			default:
+				Paniek("Unknown horizontal alignment"); return;
+			}
+			switch (ay) {
+			case Align::Top:
+				sy = y; break;
+			case Align::Right:
+				sy = Height(Text) - x;
+				break;
+			case Align::Center:
+				sy = (Height(Text) / 2) - (x / 2);
+				break;
+			default:
+				Paniek("Unknown vertical alignment"); return;
+			}
+			TW(Text, true, sx, sy);
+		}
+#pragma endregion
 	}
 }

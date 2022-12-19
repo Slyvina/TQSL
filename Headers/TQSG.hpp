@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSG.hpp
 // Tricky's Quick SDL2 Graphics (header)
-// version: 22.12.18
+// version: 22.12.19
 // Copyright (C) 2022 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -21,15 +21,19 @@
 #pragma once
 #include <SDL_image.h>
 #include <Slyvina.hpp>
+#include <SlyvGINIE.hpp>
 #include <JCR6_Core.hpp>
 
 namespace Slyvina {
 	namespace TQSG {
 
 		class _____TIMAGE; // NEVER USE THIS TYPE DIRECTLY! ONLY USE 'TImage' or 'TUImage' in stead, or you'll regret it!!!
-
 		typedef std::shared_ptr<_____TIMAGE> TImage; // A shared pointer to use for images.
 		typedef std::unique_ptr<_____TIMAGE> TUImage; // A unique pointer to use for images.
+
+		class _____TIMAGEFONT; // NEVER USE THIS TYPE DIRECTLY! ONLY USE 'TImageFont' or 'TUImageFont' in stead, or you'll regret it!!!
+		typedef std::shared_ptr<_____TIMAGEFONT> TImageFont; // A shared pointer to use for images.
+		typedef std::unique_ptr<_____TIMAGEFONT> TUImageFont; // A unique pointer to use for images.
 
 
 		typedef void (*TQSG_PanicType)(std::string errormessage);
@@ -136,6 +140,39 @@ namespace Slyvina {
 
 			~_____TIMAGE();
 		};
+
+		enum class Align { Left = 0, Top = 0, Right = 1, Bottom = 1, Center = 2 };
+		class _____TIMAGEFONTCHAR;
+		class _____TIMAGEFONT {
+		private:
+			//std::map<uint32, _____TIMAGEFONTCHAR*> CharPics{};
+			//std::map<int, std::shared_ptr<_____TIMAGEFONTCHAR>> CharPics{};
+			std::shared_ptr<_____TIMAGEFONTCHAR> CharPics[256*256];
+			
+			void KillAll();
+			//_____TIMAGEFONTCHAR* GetChar(uint32 c);
+			//_____TIMAGEFONTCHAR* GetChar(byte b1, byte b2);
+			std::shared_ptr<_____TIMAGEFONTCHAR> GetChar(int c);
+			std::shared_ptr<_____TIMAGEFONTCHAR> GetChar(byte b1, byte b2);
+			Units::UGINIE Alt{nullptr};
+			std::string pathprefix{ "" };
+			JCR6::JT_Dir FntRes{ nullptr };
+			void TW(std::string Text, bool Draw, int& x, int& y);
+			bool spaceavg{ true };
+			int spacewidth{ 0 };
+		public:
+			int TabWidth{ 40 };
+			void Text(std::string Text, int x, int y, Align ax = Align::Left, Align ay = Align::Top);
+			int Width(std::string Text);
+			int Height(std::string Text);
+			_____TIMAGEFONT(JCR6::JT_Dir Res, std::string p);
+			inline ~_____TIMAGEFONT() { KillAll(); }
+		};
+
+		TImageFont LoadImageFont(JCR6::JT_Dir Res, std::string path = "");
+		TUImageFont LoadUImageFont(JCR6::JT_Dir Res, std::string path = "");
+		TImageFont LoadImageFont(std::string JCRRes, std::string path = "");
+		TUImageFont LoadUImageFont(std::string JCRRes, std::string path = "");
 
 		/// <summary>
 		/// Will return the last error which happened during the last TQSG call. When the last operation went well, this will be an empty string.
