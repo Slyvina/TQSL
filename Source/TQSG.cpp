@@ -21,7 +21,7 @@
 
 #define TQSG_TileWithAltScreen
 
-#define TQSG_Debug
+#undef TQSG_Debug
 
 #ifdef TQSG_Debug
 #define Chat(cht) std::cout << "\x1b[35mTQSG Debug>\t\x1b[0m" << cht <<"\n"
@@ -604,7 +604,7 @@ namespace Slyvina {
 		int _____TIMAGE::Width() {
 			_LastError = "";
 			if (!Frames()) {
-				_LastError = "<Image>->Width(): No Frames"; return 0;
+				_LastError = "<Image>->Width(): No Frames";
 				return 0;
 			}
 			int w, h;
@@ -615,12 +615,21 @@ namespace Slyvina {
 		int _____TIMAGE::Height() {
 			_LastError = "";
 			if (!Frames()) {
-				_LastError = "<Image>->Height(): No Frames"; return 0;
+				_LastError = "<Image>->Height(): No Frames"; 
 				return 0;
 			}
 			int w, h;
 			SDL_QueryTexture(Textures[0], NULL, NULL, &w, &h);
 			return h;
+		}
+
+		void _____TIMAGE::GetFormat(int *width, int *height) {
+			_LastError = "";
+			if (!Frames()) {
+				_LastError = "<Image>->Height(): No Frames"; 
+				return;
+			}
+			SDL_QueryTexture(Textures[0], NULL, NULL, width, height);			
 		}
 
 		uint64 _____TIMAGE::img_cnt{ 0 };
@@ -735,6 +744,27 @@ namespace Slyvina {
 			Target.y = AltScreen.Y((y - (int)ceil(hoty * _scaley)) + _originy);
 			Target.w = AltScreen.W((int)ceil(Width() * _scalex));
 			Target.h = AltScreen.H((int)ceil(Height() * _scaley));
+			SDL_SetTextureBlendMode(Textures[frame], SDLBlend());
+			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
+			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
+			SDL_RenderCopy(_Screen->gRenderer, Textures[frame], NULL, &Target);
+		}
+
+		void _____TIMAGE::TrueDraw(int x, int y, int frame) {
+			_LastError = "";
+			if (!NeedScreen()) return;
+			if (frame < 0 || frame >= Textures.size()) {
+				char FE[400];
+				sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());
+				//LastError = FE;
+				Paniek(FE);
+				return;
+			}
+			SDL_Rect Target;
+			Target.x = x - hotx; //+_originx;
+			Target.y = y - hoty; //+_originy;
+			Target.w = Width();
+			Target.h = Height();
 			SDL_SetTextureBlendMode(Textures[frame], SDLBlend());
 			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
 			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);

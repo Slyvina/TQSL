@@ -26,6 +26,8 @@ namespace Slyvina {
 	namespace TQSE {
 
 		std::string AllKeys(); // A list of all known keycodes. This function only exists for debug purposes (for me).
+		
+		std::vector<SDL_KeyCode> KeyArray();
 
 		typedef void (*EventFunction) (SDL_Event* Event);
 
@@ -63,7 +65,7 @@ namespace Slyvina {
 		// Will try to get a typable character the last event. Not fully accurate, but for typing names and such it can do the job.
 		unsigned char GetChar();
 
-
+		int GetMouseButtons();
 		int MouseX();
 		int MouseY();
 		void HideMouse();

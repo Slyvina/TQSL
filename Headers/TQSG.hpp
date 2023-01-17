@@ -108,6 +108,14 @@ namespace Slyvina {
 			void Draw(int x, int y, int frame = 0);
 
 			/// <summary>
+			/// Just draws an image at its true coordinates and true sizes. Hotspots will still be taken into account, but sizes, and alt screen settings will be ignored.
+			/// </summary>
+			/// <param name="x"></param>
+			/// <param name="y"></param>
+			/// <param name="frame"></param>
+			void TrueDraw(int x, int y, int frame = 0);
+
+			/// <summary>
 			/// Draws an image. Now rotation and such are also possible
 			/// </summary>
 			/// <param name="x"></param>
@@ -133,6 +141,8 @@ namespace Slyvina {
 
 			int Width();
 			int Height();
+
+			void GetFormat(int *width, int *height);
 
 			inline _____TIMAGE() {} // Just to avoid some crap
 			_____TIMAGE(std::string file);

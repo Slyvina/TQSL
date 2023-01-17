@@ -312,7 +312,7 @@ namespace Slyvina {
 		static void MouseClean(bool full = false) {
 			for (unsigned int i = 0; i < maxmousebuttons; i++) {
 				if (full) MsButOldDown[i] = false; else MsButOldDown[i] = MsButDown[i];
-				MsButDown[i] = false;
+				if (full) MsButDown[i] = false;
 				MsButHit[i] = false;
 				MsMousePressed[i] = false;
 				MsMouseReleased[i] = false;
@@ -391,6 +391,8 @@ namespace Slyvina {
 		bool KeyHit(SDL_KeyCode c) { return stKeyHit[c]; }
 
 		bool KeyDown(SDL_KeyCode c) { return stKeyDown[c]; }
+
+		int GetMouseButtons() { return maxmousebuttons; }
 
 		SDL_KeyCode GetKey() {
 			for (auto& c : stKeyHit) if (c.second) return (SDL_KeyCode)c.first;
@@ -644,8 +646,16 @@ namespace Slyvina {
 		}
 
 		void AppTitle(std::string Title) {
-			TQSE_AppTitle = Title;
+			TQSE_AppTitle = Title;			
 		}
 
+
+		std::vector<SDL_KeyCode> KeyArray() {
+			static std::vector<SDL_KeyCode> ret;
+			if (!ret.size()) {
+				for (int i = 0; i < numkeys; i++) ret.push_back((SDL_KeyCode)stAllKeys[i]);
+			}
+			return ret;
+		}
 	}
 }
