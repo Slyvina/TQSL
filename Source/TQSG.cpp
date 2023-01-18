@@ -1,8 +1,8 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 22.12.19
-// Copyright (C) 2022 Jeroen P. Broks
+// version: 23.01.17
+// Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
 // arising from the use of this software.
@@ -1217,7 +1217,7 @@ namespace Slyvina {
 			if (!Draw) { x = _x; y = _y+_lineheight; }
 		}
 		int _____TIMAGEFONT::Width(std::string Text) {
-			int rw, rh;
+			int rw{ 0 }, rh{ 0 };
 			TW(Text, false, rw, rh);
 			return rw;
 		}
@@ -1235,7 +1235,7 @@ namespace Slyvina {
 			pathprefix = p;
 		}
 		int _____TIMAGEFONT::Height(std::string Text) {
-			int rw, rh;
+			int rw{ 0 }, rh{ 0 };
 			TW(Text, false, rw, rh);
 			return rh;
 
