@@ -335,7 +335,7 @@ namespace Slyvina {
 		/// </summary>
 		/// <param name="r"></param>
 		/// <param name="open"></param>
-		void Rect(SDL_Rect *r, bool open= false);
+		void Rect(SDL_Rect* r, bool open = false);
 
 		/// <summary>
 		/// Draw a circle

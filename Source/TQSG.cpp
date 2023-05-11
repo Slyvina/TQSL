@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.03.06
+// version: 23.05.11
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -413,6 +413,11 @@ namespace Slyvina {
 			_LastError = "";
 			auto ret{ new _____TIMAGE(J,entry) };
 			if (_LastError.size()) { delete ret; return nullptr; }
+			if (!ret->Frames()) {
+				std::cout << "Trying to load entry " << entry << " resulted into zero frames!";
+				std::cout << "JCR6: " << JCR6::Last()->ErrorMessage << " (" << JCR6::Last()->MainFile << "::" << JCR6::Last()->Entry << ")\n";
+				return nullptr;
+			}
 			return std::shared_ptr<_____TIMAGE>(ret);
 		}
 
@@ -678,6 +683,7 @@ namespace Slyvina {
 			_LastError = "";
 			if (!Res) { Paniek("Trying to get images from null!"); return; }
 			if (!NeedScreen()) return;
+			//std::cout << entry << " entry(" << Res->EntryExists(entry) << ") dir(" << Res->DirectoryExists(entry) << ")\n"; // debug
 			if (Res->EntryExists(entry)) {
 				auto buf{ Res->B(entry) };
 				if (JCR6::Last()->Error) {
@@ -690,6 +696,7 @@ namespace Slyvina {
 				auto files{ Res->Directory(entry) };
 				for (auto f : *files) {
 					auto ext{ Upper(ExtractExt(f)) };
+					//std::cout << entry << " -> " << f << std::endl; // debug
 					if (ext == "PNG" || ext == "JPG" || ext == "JPEG" || ext == "BMP") {
 						auto buf{ Res->B(f) };
 						if (JCR6::Last()->Error) {
@@ -911,7 +918,7 @@ namespace Slyvina {
 
 					// TQSG_Rect(dx, dy, imgw, imgh);//debug
 					if (frame < 0 || frame >= Textures.size()) {
-						Paniek("<IMAGE>.Tile(" + to_string(x) + "," + to_string(y) + "," + to_string(w) + "," + to_string(h) + "," + to_string(frame) + "): Out of frame boundaries (framecount: " + to_string(Textures.size()) + ")"); return;
+						Paniek("<IMAGE>.Tile(" + to_string(x) + "," + to_string(y) + "," + to_string(w) + "," + to_string(h) + ") Frame(" + to_string(frame) + "/" + to_string(Frames()) + "): Out of frame boundaries (framecount: " + to_string(Textures.size()) + ")"); return;
 					}
 					Target.x = AltScreen.X(Target.x);
 					Target.y = AltScreen.Y(Target.y);
@@ -1249,7 +1256,7 @@ namespace Slyvina {
 				sx = Width(Text) - x;
 				break;
 			case Align::Center:
-				sx = (Width(Text) / 2) - (x / 2);
+				sx = x - (Width(Text) / 2); // -(x / 2);
 				break;
 			default:
 				Paniek("Unknown horizontal alignment"); return;
@@ -1258,10 +1265,10 @@ namespace Slyvina {
 			case Align::Top:
 				sy = y; break;
 			case Align::Right:
-				sy = Height(Text) - x;
+				sy = Height(Text) - y;
 				break;
 			case Align::Center:
-				sy = (Height(Text) / 2) - (x / 2);
+				sy = y - (Height(Text) / 2); //- (y / 2);
 				break;
 			default:
 				Paniek("Unknown vertical alignment"); return;
