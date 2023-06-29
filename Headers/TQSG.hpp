@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSG.hpp
 // Tricky's Quick SDL2 Graphics (header)
-// version: 23.01.17
+// version: 23.06.23
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
