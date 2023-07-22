@@ -29,6 +29,7 @@
 #define Chat(cht)
 #endif
 
+#include <algorithm>
 
 #include <TQSG.hpp>
 #include <SlyvString.hpp>
@@ -139,6 +140,10 @@ namespace Slyvina {
 		int ASY(int y) { return AltScreen.Y(y); }
 		int ASX(int x) { return AltScreen.X(x); }
 		void SetAlpha(byte a) { _alpha = a; _LastError = ""; }
+		void SetAlphaD(double a) {
+			a = std::min(a, (double)1); a = std::max((double)0, a);
+			SetAlpha((byte)floor(a * 255));
+		}
 		void SetColor(byte r, byte g, byte b) { _red = r; _green = g; _blue = b; _LastError = ""; }
 		void SetColorHSV(double Hue, double Sat, double Value) {
 			Units::hsv _hsv{ Hue,Sat,Value };

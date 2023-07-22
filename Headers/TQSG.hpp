@@ -197,6 +197,12 @@ namespace Slyvina {
 		void SetAlpha(byte);
 
 		/// <summary>
+		/// Sets Alpha on a value based between 0 and 1
+		/// </summary>
+		/// <param name="alpha"></param>
+		void SetAlphaD(double);
+
+		/// <summary>
 		/// Set the color value for rendering
 		/// </summary>
 		/// <param name="red"></param>
