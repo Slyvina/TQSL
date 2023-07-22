@@ -1,8 +1,8 @@
 // Lic:
 // TQSL/Source/TQSA.cpp
 // Slyvina - Tricky's Quick SDL Audio
-// version: 22.12.19
-// Copyright (C) 2022 Jeroen P. Broks
+// version: 23.07.22
+// Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
 // arising from the use of this software.
@@ -18,7 +18,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 // EndLic
 
-#define TQSA_DEBUG
+#undef TQSA_DEBUG
 
 #include <TQSA.hpp>
 
@@ -158,6 +158,10 @@ namespace Slyvina {
 
 		_____TAudio::~_____TAudio() {
 			if (ActualChunk) Mix_FreeChunk(ActualChunk);
+		}
+
+		bool _____TAudio::Valid(){
+			return ActualChunk != nullptr;
 		}
 
 		int _____TAudio::Play(int loops) {
