@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.06.23
+// version: 23.07.19
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -136,6 +136,8 @@ namespace Slyvina {
 #pragma endregion
 
 #pragma region GeneralCommands
+		int ASY(int y) { return AltScreen.Y(y); }
+		int ASX(int x) { return AltScreen.X(x); }
 		void SetAlpha(byte a) { _alpha = a; _LastError = ""; }
 		void SetColor(byte r, byte g, byte b) { _red = r; _green = g; _blue = b; _LastError = ""; }
 		void SetColorHSV(double Hue, double Sat, double Value) {
@@ -871,7 +873,7 @@ namespace Slyvina {
 			//TQSG_ViewPort(tsx, tsy, tw, th);
 			//TQSG_Rect(tsx, tsy, tw, th);
 			//cout << "for (int dy = tsy("<<tsy<<") - iy("<<iy<<")(" << (tsy - iy) << "); dy < tey(" << tey << "); dy += imgh(" << imgh << ")) \n";
-			SDL_SetTextureColorMod(Textures[frame], _red, _green, _alpha);
+			SDL_SetTextureColorMod(Textures[frame], _red, _green, _blue);
 			SDL_SetTextureBlendMode(Textures[frame], SDLBlend());
 			SDL_SetTextureAlphaMod(Textures[frame], _alpha);
 			for (int dy = tsy - iy; dy < tey; dy += imgh) {
@@ -1138,11 +1140,11 @@ namespace Slyvina {
 					}
 				}
 				if (!WantFile.size()) {
-					std::cout << "WARNING! No suitable character image found for #" << c << ".\n";
+					std::cout << "WARNING! No suitable character image found for #" << c << ". ("<<pathprefix<<")\n";
 					//CharPics[c] = new _____TIMAGEFONTCHAR(this, nullptr);
 					CharPics[c] = std::make_shared<_____TIMAGEFONTCHAR>(this, nullptr);
 				} else {
-
+					//std::cout << "Loading char: " << WantFile << std::endl; // debug
 					auto buf = FntRes->B(WantFile);
 					auto rwo = SDL_RWFromMem(buf->Direct(), buf->Size());
 					auto tex = IMG_LoadTexture_RW(_Screen->gRenderer, rwo, true);
@@ -1265,7 +1267,7 @@ namespace Slyvina {
 			case Align::Top:
 				sy = y; break;
 			case Align::Right:
-				sy = Height(Text) - y;
+				sy = y - Height(Text);
 				break;
 			case Align::Center:
 				sy = y - (Height(Text) / 2); //- (y / 2);
