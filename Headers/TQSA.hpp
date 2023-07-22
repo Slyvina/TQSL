@@ -1,8 +1,8 @@
 // Lic:
 // TQSL/Headers/TQSA.hpp
 // Tricky's Quick SDL Audio (header)
-// version: 22.12.19
-// Copyright (C) 2022 Jeroen P. Broks
+// version: 23.07.22
+// Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
 // arising from the use of this software.
@@ -44,6 +44,8 @@ namespace Slyvina {
 			_____TAudio(const char* File);
 			_____TAudio(JCR6::JT_Dir JCRResource, std::string JCREntry);
 			//_____TAudio(std::string JCRMain, std::string JCREntry);
+
+			bool Valid();
 
 			int Play(int loops = 0);
 			void ChPlay(int channel, int loops = 0);
