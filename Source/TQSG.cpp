@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.07.22
+// version: 23.07.26
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -725,6 +725,7 @@ namespace Slyvina {
 
 		void _____TIMAGE::StretchDraw(int x, int y, int w, int h, int frame) {
 			if (!NeedScreen()) return;
+			if (!this) throw std::runtime_error(TrSPrintF("<NULL>.StretchDraw(%d,%d,%d,%d,%d): Can't stretch from null!", x, y, w, h, frame));
 			_LastError = "";
 			if (frame < 0 || frame >= Textures.size()) {
 				char FE[400];
