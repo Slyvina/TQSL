@@ -1265,7 +1265,7 @@ namespace Slyvina {
 			case Align::Left:
 				sx = x; break;
 			case Align::Right:
-				sx = Width(Text) - x;
+				sx = x- Width(Text);
 				break;
 			case Align::Center:
 				sx = x - (Width(Text) / 2); // -(x / 2);
