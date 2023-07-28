@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.07.26
+// version: 23.07.28
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -495,6 +495,10 @@ namespace Slyvina {
 		TUImage LoadUImage(JCR6::JT_Dir J, std::string entry) {
 			auto ret{ new _____TIMAGE(J,entry) };
 			if (_LastError.size()) { delete ret; return nullptr; }
+			if (!ret) {
+				std::cout << "ERROR! Entry '" << entry << "' resulted to null. Cannot create a unique pointer!\n";
+				return nullptr;
+			}
 			return std::unique_ptr<_____TIMAGE>(ret);
 		}
 
