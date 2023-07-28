@@ -1276,7 +1276,7 @@ namespace Slyvina {
 			switch (ay) {
 			case Align::Top:
 				sy = y; break;
-			case Align::Right:
+			case Align::Bottom:
 				sy = y - Height(Text);
 				break;
 			case Align::Center:
