@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.07.28
+// version: 23.08.01
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -1061,6 +1061,12 @@ namespace Slyvina {
 			"%d.bmp",
 			"%03d.bmp"
 		};
+		char TryFmt2[TryFmtMax][200]{
+			"%d.%d.png",
+			"%03d.%03d.png",
+			"%d.%d.bmp",
+			"%03d.03d.bmp"
+		};
 
 		class _____TIMAGEFONTCHAR {
 		public:
@@ -1146,6 +1152,14 @@ namespace Slyvina {
 							Chat("For character #" << c << ", file " << fn << " has been found!");
 							WantFile = fn;
 							break;
+						} else if (c>255) {
+							auto a{ c / 256 }, b{ c % 256 };
+							auto fn2{ pathprefix + TrSPrintF(TryFmt2[i],a,b) };
+							if (FntRes->EntryExists(fn2)) {
+								Chat("For character #" << c << ", file " << fn2 << " has been found!");
+								WantFile = fn2;
+								break;
+							}
 						}
 					}
 				}
