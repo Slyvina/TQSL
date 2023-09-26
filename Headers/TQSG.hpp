@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSG.hpp
 // Tricky's Quick SDL2 Graphics (header)
-// version: 23.07.22
+// version: 23.09.26
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -342,6 +342,15 @@ namespace Slyvina {
 		/// <param name="r"></param>
 		/// <param name="open"></param>
 		void Rect(SDL_Rect* r, bool open = false);
+
+		/// <summary>
+		/// Draws a rectengale, but in stead of width and height based on true coordinates
+		/// </summary>
+		/// <param name="sx">Start X</param>
+		/// <param name="sy">Start Y</param>
+		/// <param name="ex">End X</param>
+		/// <param name="ey">End Y</param>
+		void ExRect(int sx, int sy, int ex, int ey);
 
 		/// <summary>
 		/// Draw a circle

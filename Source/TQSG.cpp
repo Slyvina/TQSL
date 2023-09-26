@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.08.01
+// version: 23.09.26
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -234,6 +234,7 @@ namespace Slyvina {
 					return true;
 				}
 			}
+			return false;
 		}
 
 		bool Graphics(int width, int height, std::string Title) { return TrueGraphics(width, height, false, Title); }
@@ -348,6 +349,16 @@ namespace Slyvina {
 		void Rect(int x, int y, int width, int height, bool open) {
 			SDL_Rect r{ x,y,width,height };
 			Rect(&r, open);
+		}
+
+		void ExRect(int sx, int sy, int ex, int ey) {
+			auto
+				startx{ std::min(sx,ex) },
+				starty{ std::min(sy,ey) },
+				endx{ std::max(sx,ex) },
+				endy{ std::max(sy,ey) };
+
+			Rect(startx, starty, endx - startx, endy - starty);
 		}
 
 		void Rect(SDL_Rect* r, bool open) {

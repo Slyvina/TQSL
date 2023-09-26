@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSE.cpp
 // Slyvina - Tricky's Quick SDL2 Event handler
-// version: 23.01.17
+// version: 23.09.26
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -315,7 +315,7 @@ namespace Slyvina {
 				if (full) MsButDown[i] = false;
 				MsButHit[i] = false;
 				MsMousePressed[i] = false;
-				MsMouseReleased[i] = false;
+				MsMouseReleased[i] = false;				
 			}
 		}
 
