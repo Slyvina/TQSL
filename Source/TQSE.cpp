@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSE.cpp
 // Slyvina - Tricky's Quick SDL2 Event handler
-// version: 23.09.26
+// version: 23.10.08
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -571,10 +571,10 @@ namespace Slyvina {
 
 			}
 			if (buttonid == -1) {
-				SDL_Log("no selection");
+				//SDL_Log("no selection");
 			} else {
-				SDL_Log("selection was %s", buttons[buttonid].text);
-				std::cout << "User selected " << buttonid << " -> " << buttons[buttonid].text << std::endl;
+				//SDL_Log("selection was %s", buttons[buttonid].text);
+				//std::cout << "User selected " << buttonid << " -> " << buttons[buttonid].text << std::endl;
 			}
 			switch (buttonid) {
 			case -1:

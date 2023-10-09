@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.09.26
+// version: 23.10.08
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -344,6 +344,13 @@ namespace Slyvina {
 			if (!NeedScreen()) return;
 			SDL_SetRenderDrawColor(_Screen->gRenderer, _red, _green, _blue, _alpha);
 			SDL_RenderDrawLine(_Screen->gRenderer, start_x, start_y, end_x, end_y);
+		}
+
+		
+		void ALine(int start_x, int start_y, int end_x, int end_y) {
+			if (!NeedScreen()) return;
+			SDL_SetRenderDrawColor(_Screen->gRenderer, _red, _green, _blue, _alpha);
+			SDL_RenderDrawLine(_Screen->gRenderer, AltScreen.X(start_x), AltScreen.Y(start_y), AltScreen.X(end_x), AltScreen.Y(end_y));
 		}
 
 		void Rect(int x, int y, int width, int height, bool open) {
@@ -945,8 +952,8 @@ namespace Slyvina {
 					}
 					Target.x = AltScreen.X(Target.x);
 					Target.y = AltScreen.Y(Target.y);
-					Target.w = AltScreen.X(Target.w);
-					Target.h = AltScreen.Y(Target.h);
+					Target.w = AltScreen.W(Target.w);
+					Target.h = AltScreen.H(Target.h);
 					SDL_RenderCopy(_Screen->gRenderer, Textures[frame], &Source, &Target);
 				}
 			}
@@ -1311,6 +1318,15 @@ namespace Slyvina {
 				Paniek("Unknown vertical alignment"); return;
 			}
 			TW(Text, true, sx, sy);
+		}
+
+		void _____TIMAGEFONT::Dark(std::string _Text, int x, int y, Align ax , Align ay) {
+			auto __r{ _red }, __g{ _green }, __b{ _blue }, __alpha{ _alpha };
+			SetColor(0, 0, 0, 255);
+			for (int ix = x - 1; ix <= x + 1; ++ix) for (int iy = y - 1; iy <= y + 1; ++iy) Text(_Text, ix, iy, ax, ay);
+			SetColor(__r, __g, __b, 255);
+			Text(_Text, x, y, ax, ay);
+			SetAlpha(__alpha);
 		}
 #pragma endregion
 	}

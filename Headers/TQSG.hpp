@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSG.hpp
 // Tricky's Quick SDL2 Graphics (header)
-// version: 23.09.26
+// version: 23.10.08
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -173,6 +173,7 @@ namespace Slyvina {
 		public:
 			int TabWidth{ 40 };
 			void Text(std::string Text, int x, int y, Align ax = Align::Left, Align ay = Align::Top);
+			void Dark(std::string Text, int x, int y, Align ax = Align::Left, Align ay = Align::Top);
 			int Width(std::string Text);
 			int Height(std::string Text);
 			_____TIMAGEFONT(JCR6::JT_Dir Res, std::string p);
@@ -325,6 +326,15 @@ namespace Slyvina {
 		/// <param name="end_x"></param>
 		/// <param name="end_y"></param>
 		void Line(int start_x, int start_y, int end_x, int end_y);
+
+		/// <summary>
+		/// Draws a line by recalculating the x,y by altscreen, but the line thickness and stuff is not changed.
+		/// </summary>
+		/// <param name="start_x"></param>
+		/// <param name="start_y"></param>
+		/// <param name="end_x"></param>
+		/// <param name="end_y"></param>
+		void ALine(int start_x, int start_y, int end_x, int end_y);
 
 		/// <summary>
 		/// Draw a rectangle
