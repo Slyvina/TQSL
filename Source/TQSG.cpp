@@ -112,8 +112,8 @@ namespace Slyvina {
 			int H(int h) { if (h <= 0) return h; return (int)ceil(h * ref_y); }
 			int ScaledW(int w) { return (int)ceil(W(w) * _scalex); }
 			int ScaledH(int h) { return (int)ceil(H(w) * _scalex); }
-			int RX() { return ref_x; }
-			int RY() { return ref_y; }
+			double RX() { return ref_x; }
+			double RY() { return ref_y; }
 		};
 		__AltScreen AltScreen;
 
@@ -146,7 +146,7 @@ namespace Slyvina {
 		}
 		void SetColor(byte r, byte g, byte b) { _red = r; _green = g; _blue = b; _LastError = ""; }
 		void SetColorHSV(double Hue, double Sat, double Value) {
-			Units::hsv _hsv{ Hue,Sat,Value };
+			Units::hsv _hsv{ Hue, Sat, Value };
 			auto rgb{ Units::hsv2rgb(_hsv) };
 			SetColor((byte)floor(rgb.r * 255), (byte)floor(rgb.g * 255), (byte)floor(rgb.b * 255));
 		}
@@ -347,7 +347,7 @@ namespace Slyvina {
 			SDL_RenderDrawLine(_Screen->gRenderer, start_x, start_y, end_x, end_y);
 		}
 
-		
+
 		void ALine(int start_x, int start_y, int end_x, int end_y) {
 			if (!NeedScreen()) return;
 			SDL_SetRenderDrawColor(_Screen->gRenderer, _red, _green, _blue, _alpha);
@@ -384,7 +384,7 @@ namespace Slyvina {
 			Rect(AltScreen.X(x), AltScreen.Y(y), AltScreen.W(w), AltScreen.H(h), open);
 		}
 
-		void ACircle(int center_x, int center_y, int radius, int segments ) {
+		void ACircle(int center_x, int center_y, int radius, int segments) {
 			static double doublepi{ 2 * 3.14 };
 			double progress{ doublepi / (double)std::max(segments,4) };
 			float lastx = center_x, lasty = (radius)+center_y, firstx = lastx, firsty = lasty;
@@ -449,7 +449,7 @@ namespace Slyvina {
 
 		TImageFont LoadImageFont(JCR6::JT_Dir Res, std::string path) {
 			_LastError = "";
-			return std::shared_ptr<_____TIMAGEFONT>(new _____TIMAGEFONT(Res,path));
+			return std::shared_ptr<_____TIMAGEFONT>(new _____TIMAGEFONT(Res, path));
 		}
 
 		TUImageFont LoadUImageFont(JCR6::JT_Dir Res, std::string path) {
@@ -483,7 +483,7 @@ namespace Slyvina {
 			_LastError = "";
 			SDL_DisplayMode mode;
 			if (!NeedSDL()) return 0;
-			if (!SDL_GetDesktopDisplayMode(0, &mode)) _LastError = SDL_GetError();			
+			if (!SDL_GetDesktopDisplayMode(0, &mode)) _LastError = SDL_GetError();
 			return mode.w;
 		}
 
@@ -502,7 +502,7 @@ namespace Slyvina {
 			h = mode.h;
 		}
 
-		
+
 
 		TImage LoadImage(std::string JCRFile, std::string entry) {
 			_LastError = "";
@@ -650,7 +650,7 @@ namespace Slyvina {
 		int _____TIMAGE::Height() {
 			_LastError = "";
 			if (!Frames()) {
-				_LastError = "<Image>->Height(): No Frames"; 
+				_LastError = "<Image>->Height(): No Frames";
 				return 0;
 			}
 			int w, h;
@@ -658,13 +658,13 @@ namespace Slyvina {
 			return h;
 		}
 
-		void _____TIMAGE::GetFormat(int *width, int *height) {
+		void _____TIMAGE::GetFormat(int* width, int* height) {
 			_LastError = "";
 			if (!Frames()) {
-				_LastError = "<Image>->Height(): No Frames"; 
+				_LastError = "<Image>->Height(): No Frames";
 				return;
 			}
-			SDL_QueryTexture(Textures[0], NULL, NULL, width, height);			
+			SDL_QueryTexture(Textures[0], NULL, NULL, width, height);
 		}
 
 		uint64 _____TIMAGE::img_cnt{ 0 };
@@ -737,9 +737,26 @@ namespace Slyvina {
 						LoadFrame(_rwops);
 					}
 				}
-				if (!Textures.size()) { _LastError = "No textures loaded!"; }
+			}
+			//std::cout << "LoadImage " << entry << " Textures:" << Textures.size() << std::endl; // debug
+			if (!Textures.size()) { _LastError = "No textures loaded!"; return; }
+			auto hotfile{ StripExt(entry) + ".hot" }; //std::cout << "HOT!!! " << hotfile << " exists: " << boolstring(Res->EntryExists(hotfile)) << "\n";
+			if (Res->EntryExists(hotfile)) {
+				auto hotcontent{ Upper(Trim(Res->GetString(hotfile))) };
+				//std::cout << "\7HOT!!! " << hotcontent; for (size_t i = 0; i < hotcontent.size(); ++i) std::cout << "; Chr(" << (int)hotcontent[i] << ")"; std::cout << "\n";
+				if (hotcontent == "CENTER") {
+					HotCenter();
+					//std::cout << "HOT!!! Centered\n";
+				} else if (hotcontent == "BOTTOMCENTER") HotBottomCenter();
+				else {
+					auto p{ FindFirst(hotcontent,",") }; if (p < 0) { _LastError = "Hotspot error"; return; }
+					auto hx{ ToInt(hotcontent.substr(0,p)) };
+					auto hy{ ToInt(hotcontent.substr(p + 1)) };
+					Hot(hx, hy);
+				}
 			}
 		}
+	
 
 		_____TIMAGE::~_____TIMAGE() {
 			Chat("Image " << _ID << " destroyed");
