@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Headers/TQSG.hpp
 // Tricky's Quick SDL2 Graphics (header)
-// version: 23.10.08
+// version: 23.11.07
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -274,6 +274,7 @@ namespace Slyvina {
 		void SetBlend(Blend _blend);
 		void SetBlend(SDL_BlendMode _blend);
 		void SetBlitzBlend(BlitzBlend _blend);
+		Blend GetBlend();
 
 		/// <summary>
 		/// Screen width (in graphics mode only). When pure is set to true, the altscreen settings will be ignored
