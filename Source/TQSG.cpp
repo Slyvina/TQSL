@@ -1,7 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.11.07
+// version: 23.12.24
 // Copyright (C) 2022, 2023 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -889,11 +889,13 @@ namespace Slyvina {
 				if (ix < 0) {
 					//cout << "neg x:" << ix << " to ";
 					ix = (x - (Width() + ix)) % Width();
+					//ix = (AltScreen.X(x) - (Width() + ix)) % Width();
 					//cout << ix << "\n";
 				}
 				if (iy < 0) {
 					//cout << "neg x:" << ix << " to ";
-					iy = (y - (Height() + iy)) % Height();
+					iy =  (y - (Height() + iy)) % Height();
+					//iy = (AltScreen.Y(y) - (Height() + iy)) % Height();
 					//cout << ix << "\n";
 				}
 				//int ox, oy, ow, oh;
@@ -972,6 +974,8 @@ namespace Slyvina {
 						if (frame < 0 || frame >= Textures.size()) {
 							Paniek("<IMAGE>.Tile(" + to_string(x) + "," + to_string(y) + "," + to_string(w) + "," + to_string(h) + ") Frame(" + to_string(frame) + "/" + to_string(Frames()) + "): Out of frame boundaries (framecount: " + to_string(Textures.size()) + ")"); return;
 						}
+
+
 						Target.x = AltScreen.X(Target.x);
 						Target.y = AltScreen.Y(Target.y);
 						Target.w = AltScreen.W(Target.w);
@@ -1238,6 +1242,7 @@ namespace Slyvina {
 		}
 		//_____TIMAGEFONTCHAR* _____TIMAGEFONT::GetChar(byte b1, byte b2) {
 		std::shared_ptr<_____TIMAGEFONTCHAR> _____TIMAGEFONT::GetChar(byte b1, byte b2) {
+			if (b1 == 100 && b2 == 113) return GetChar(34);
 			return GetChar(((uint64)b1 * 256) + (uint64)b2);
 		}
 
