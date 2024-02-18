@@ -2,6 +2,7 @@
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
 // version: 24.02.18
+// Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
 // arising from the use of this software.
@@ -40,6 +41,9 @@ using namespace Slyvina::Units;
 
 namespace Slyvina {
 	namespace TQSG {
+
+
+		bool IgnoreDoubleCharError=true; 
 
 
 		static std::string
@@ -874,6 +878,7 @@ namespace Slyvina {
 					y = ay + _originy,
 					ix = aix,
 					iy = aiy;
+				
 
 				_LastError = "";
 				// todo: Fix issues with negative ix
@@ -887,13 +892,14 @@ namespace Slyvina {
 					//*/
 				if (ix < 0) {
 					//cout << "neg x:" << ix << " to ";
-					ix = (x - (Width() + ix)) % Width();
 					//ix = (AltScreen.X(x) - (Width() + ix)) % Width();
 					//cout << ix << "\n";
+					
+					// Faulty: 	ix = (x - (Width() + ix)) % Width();
+					ix = Width() - (abs(ix) % Width());
 				}
 				if (iy < 0) {
-					//cout << "neg x:" << ix << " to ";
-					iy =  (y - (Height() + iy)) % Height();
+					//cout << "neg x:" << ix << " to ";					
 					//iy = (AltScreen.Y(y) - (Height() + iy)) % Height();
 					//cout << ix << "\n";
 
@@ -1281,7 +1287,13 @@ namespace Slyvina {
 						_x = x;
 						break;
 					case '|': {
-						if (pos + 2 >= Text.size()) { Paniek("Double char line end error!"); }
+						if (pos + 1 >= Text.size()) { 
+							printf("\x1b[31mError\x1b[37m Double char line end error! (%d/%d/%s)\x1b[0m\n", (int)pos, (int)Text.size(), Text.c_str());
+							if (IgnoreDoubleCharError) 
+								break;
+							else
+								Paniek("Double char line end error!");
+						}
 						auto ch{ GetChar((byte)Text[pos + 1],(byte)Text[pos + 2]) };
 						dchar = 2;
 						if (Draw) ch->Draw(_x, _y);
