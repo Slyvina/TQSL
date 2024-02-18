@@ -1,8 +1,8 @@
 // Lic:
 // TQSL/Headers/TQSG.hpp
 // Tricky's Quick SDL2 Graphics (header)
-// version: 23.11.07
-// Copyright (C) 2022, 2023 Jeroen P. Broks
+// version: 24.02.18
+// Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
 // arising from the use of this software.
@@ -26,6 +26,11 @@
 
 namespace Slyvina {
 	namespace TQSG {
+
+		/// <summary>
+		/// If set to false the program will terminate on double char errors. Otherwise it will just "ignore" them and terminate the Text request and continue after that like nothing happened.
+		/// </summary>
+		extern bool IgnoreDoubleCharError;
 
 		class _____TIMAGE; // NEVER USE THIS TYPE DIRECTLY! ONLY USE 'TImage' or 'TUImage' in stead, or you'll regret it!!!
 		typedef std::shared_ptr<_____TIMAGE> TImage; // A shared pointer to use for images.

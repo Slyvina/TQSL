@@ -1,8 +1,7 @@
 // Lic:
 // TQSL/Source/TQSG.cpp
 // Tricky's Quick SDL2 Graphics
-// version: 23.12.24
-// Copyright (C) 2022, 2023 Jeroen P. Broks
+// version: 24.02.18
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
 // arising from the use of this software.
@@ -897,6 +896,9 @@ namespace Slyvina {
 					iy =  (y - (Height() + iy)) % Height();
 					//iy = (AltScreen.Y(y) - (Height() + iy)) % Height();
 					//cout << ix << "\n";
+
+					// Faulty: iy = (y - (Height() + iy)) % Height();
+					iy = Height() - (abs(iy) % Height());
 				}
 				//int ox, oy, ow, oh;
 				//TQSG_GetViewPort(&ox, &oy, &ow, &oh);
