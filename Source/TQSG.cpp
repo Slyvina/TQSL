@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.10.28 IV
+// 	version: 24.10.28 V
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -706,9 +706,10 @@ namespace Slyvina {
 				//Create texture from surface pixels
 				auto newTexture = SDL_CreateTextureFromSurface(_Screen->gRenderer, surf);
 				if (newTexture == NULL) {
-					char FE[300];
-					sprintf_s(FE, 295, "Unable to create texture from %s!\nSDL Error: %s", file.c_str(), SDL_GetError());
-					_LastError = FE;
+					//char FE[300];
+					//sprintf_s(FE, 295, "Unable to create texture from %s!\nSDL Error: %s", file.c_str(), SDL_GetError());
+					//_LastError = FE;
+					_LastError = TrSPrintF("Unable to create texture from %s!\nSDL Error: ", file.c_str()) + SDL_GetError());
 					return;
 				}
 				Textures.push_back(newTexture);
