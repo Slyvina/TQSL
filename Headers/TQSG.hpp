@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSG.hpp
 // 	Tricky's Quick SDL2 Graphics (header)
-// 	version: 24.10.28
+// 	version: 24.10.28 I
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -23,12 +23,13 @@
 // End License
 
 #pragma once
+#include <Slyvina.hpp>
 #ifdef SlyvLinux
+// Make sure Slyvina.hpp is the top include or this won't work!!!
 #include <SDL2/SDL_image.h>
 #else
 #include <SDL_image.h>
 #endif
-#include <Slyvina.hpp>
 #include <SlyvGINIE.hpp>
 #include <JCR6_Core.hpp>
 
