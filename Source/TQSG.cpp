@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.10.28 III
+// 	version: 24.10.28 IV
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -775,9 +775,10 @@ namespace Slyvina {
 			if (!this) throw std::runtime_error(TrSPrintF("<NULL>.StretchDraw(%d,%d,%d,%d,%d): Can't stretch from null!", x, y, w, h, frame));
 			_LastError = "";
 			if (frame < 0 || frame >= Textures.size()) {
-				char FE[400];
-				sprintf_s(FE, 395, "Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
-				_LastError = FE;
+				//char FE[400];
+				//sprintf_s(FE, 395, "Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
+				//_LastError = FE;
+				_LastError = TrSPrintF("Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
 				return;
 			}
 			SDL_Rect Target;
