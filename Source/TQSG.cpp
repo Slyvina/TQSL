@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.10.28 I
+// 	version: 24.10.28 II
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -795,9 +795,10 @@ namespace Slyvina {
 			_LastError = "";
 			if (!NeedScreen()) return;
 			if (frame < 0 || frame >= Textures.size()) {
-				char FE[400];
-				sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());
+				//char FE[400];
+				//sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());				 
 				//LastError = FE;
+				auto FE{ TrSPrintF("DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size()) };
 				Paniek(FE);
 				return;
 			}
