@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.10.28 VII
+// 	version: 24.10.28 VIII
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -128,7 +128,7 @@ namespace Slyvina {
 
 
 #pragma region Paniek
-		static TQSG_PanicType TQSG_Panic{ nullptr };
+		TQSG_PanicType TQSG_Panic{ nullptr };
 		static void DefaultPanic(std::string str) {
 			SDL_Window* Win{ nullptr };
 			if (_Screen) Win = _Screen->gWindow;
@@ -560,9 +560,10 @@ namespace Slyvina {
 		void _____TIMAGE::LoadFrame(size_t frame, SDL_RWops* data, bool autofree) {
 			_LastError = "";
 			if (frame >= Textures.size()) {
-				char FE[400];
-				sprintf_s(FE, 395, "Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
-				_LastError = FE;
+				//char FE[400];
+				//sprintf_s(FE, 395, "Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
+				//_LastError = FE;
+				_LastError = TrSPrintF("Texture assignment out of bouds! (%d/%d)", frame, (int)Textures.size());
 				return;
 			}
 			if (!NeedScreen()) return;
