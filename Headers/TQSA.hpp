@@ -19,9 +19,14 @@
 // EndLic
 
 #pragma once
+#include <Slyvina.hpp>
+#ifdef SlyvLinux
+#include <SDL2/SDL.h>
+#include <SDL/SDL_mixer.h>
+#else
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <Slyvina.hpp>
+#endif
 #include <JCR6_Core.hpp>
 
 namespace Slyvina {
