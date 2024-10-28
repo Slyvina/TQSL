@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.10.28 VI
+// 	version: 24.10.28 VII
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -698,9 +698,10 @@ namespace Slyvina {
 			} else {
 				auto surf{ IMG_Load(file.c_str()) };
 				if (surf == NULL) {
-					char FE[300];
-					sprintf_s(FE, 295, "Unable to load image %s!\nSDL_image Error: %s", file.c_str(), IMG_GetError());
-					_LastError = FE;
+					//char FE[300];
+					//sprintf_s(FE, 295, "Unable to load image %s!\nSDL_image Error: %s", file.c_str(), IMG_GetError());
+					//_LastError = FE;
+					_LastError = TrSPrintF("Unable to load image %s!\nSDL_image Error: ", file.c_str()) + IMG_GetError();
 					return;
 				}
 				//Create texture from surface pixels
