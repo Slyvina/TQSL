@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSA.hpp
 // 	Tricky's Quick SDL Audio (header)
-// 	version: 24.10.28 II
+// 	version: 24.10.28 III
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
