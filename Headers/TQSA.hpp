@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSA.hpp
 // 	Tricky's Quick SDL Audio (header)
-// 	version: 24.10.28 I
+// 	version: 24.10.28 II
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -26,7 +26,7 @@
 #include <Slyvina.hpp>
 #ifdef SlyvLinux
 #include <SDL2/SDL.h>
-#include <SDL/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #else
 #include <SDL.h>
 #include <SDL_mixer.h>
