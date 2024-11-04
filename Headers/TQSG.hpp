@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSG.hpp
 // 	Tricky's Quick SDL2 Graphics (header)
-// 	version: 24.10.28 I
+// 	version: 24.11.04
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -300,8 +300,8 @@ namespace Slyvina {
 		/// </summary>
 		int ScreenHeight(bool pure=false);
 
-		int32 DesktopWidth();
-		int32 DesktopHeight();
+		int32 DesktopWidth(bool panic = false);
+		int32 DesktopHeight(bool panic = false);
 
 		/// <summary>
 		/// Drawing commands will follow alternate drawing configuration based on the settings here. This can be used to attempt to make look everything the same size regardless of the actual screen sizes. When the values are set to 0 (or a negative number) the acutal screen size will once again be used.

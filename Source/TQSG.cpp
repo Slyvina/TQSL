@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.10.29
+// 	version: 24.11.04
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -132,6 +132,7 @@ namespace Slyvina {
 		static void DefaultPanic(std::string str) {
 			SDL_Window* Win{ nullptr };
 			if (_Screen) Win = _Screen->gWindow;
+			std::cout << "\x1b[31mTQSG went into a panic!\x1b[0m\n" << str << std::endl;
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "TQSG - Fatal error!", str.c_str(), Win);
 			exit(255);
 		}
@@ -486,19 +487,21 @@ namespace Slyvina {
 			SDL_RenderDrawPoint(_Screen->gRenderer, x, y);
 		}
 
-		int32 DesktopWidth() {
+		int32 DesktopWidth(bool panic) {
 			_LastError = "";
 			SDL_DisplayMode mode;
 			if (!NeedSDL()) return 0;
 			if (!SDL_GetDesktopDisplayMode(0, &mode)) _LastError = SDL_GetError();
+			if (panic && _LastError.size()) Paniek(_LastError);
 			return mode.w;
 		}
 
-		int32 DesktopHeight() {
+		int32 DesktopHeight(bool panic) {
 			_LastError = "";
 			SDL_DisplayMode mode;
 			if (!NeedSDL()) return 0;
 			if (!SDL_GetDesktopDisplayMode(0, &mode)) _LastError = SDL_GetError();
+			if (panic && _LastError.size()) Paniek(_LastError);
 			return mode.h;
 		}
 
