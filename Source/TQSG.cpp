@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.11.04
+// 	version: 24.11.14
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -548,6 +548,25 @@ namespace Slyvina {
 		void Rotate(double degrees) { _rotatedeg = degrees; }
 #pragma endregion
 
+#pragma region TQAltPic
+		bool TQAltPic::_indexed{ false };
+		std::map<std::string, TQAltPic*> TQAltPic::_ExtIndex{};
+		std::vector<TQAltPic> TQAltPic::_List{};
+
+		void TQAltPic::ReIndex(bool onlywhenneeded) {
+			if ((!_indexed) || (!onlywhenneeded)) {
+				_ExtIndex.clear();
+				for (auto& ei : _List) {
+					if (ei._Ext.size()) {
+						auto eis{ Split(ei._Ext,';') };
+						for (auto eise:*eis) _ExtIndex[eise] = &ei;
+					}
+				}
+			}
+			_indexed = true;
+		}
+#pragma endregion
+
 #pragma region TImage
 
 		SDL_Texture* _____TIMAGE::GetFrame(size_t frame) {
@@ -649,6 +668,7 @@ namespace Slyvina {
 
 		int _____TIMAGE::Width() {
 			_LastError = "";
+			if (AltPic && AltPic->Width) return AltPic->Width(this);
 			if (!Frames()) {
 				_LastError = "<Image>->Width(): No Frames";
 				return 0;
@@ -660,6 +680,7 @@ namespace Slyvina {
 
 		int _____TIMAGE::Height() {
 			_LastError = "";
+			if (AltPic && AltPic->Width) return AltPic->Height(this);
 			if (!Frames()) {
 				_LastError = "<Image>->Height(): No Frames";
 				return 0;
@@ -680,6 +701,13 @@ namespace Slyvina {
 
 		uint64 _____TIMAGE::img_cnt{ 0 };
 		_____TIMAGE::_____TIMAGE(std::string file) {
+			auto fext{ Upper(ExtractExt(file)) };
+			auto tqae{ TQAltPic::ExtDriver(fext) };
+			if (tqae && tqae->LoadReal) {
+				tqae->LoadReal(this, file);
+				AltPic = tqae;
+				return;
+			}
 			Chat("Image " << _ID << " created by file " << file);
 			if (!NeedScreen()) return;
 			_LastError = "";
@@ -726,6 +754,13 @@ namespace Slyvina {
 			_LastError = "";
 			if (!Res) { Paniek("Trying to get images from null!"); return; }
 			if (!NeedScreen()) return;
+			auto fext{ Upper(ExtractExt(entry)) };
+			auto tqae{ TQAltPic::ExtDriver(fext) };
+			if (tqae && tqae->LoadJCR6) {
+				tqae->LoadJCR6(this, Res,entry);
+				AltPic = tqae;
+				return;
+			}
 			//std::cout << entry << " entry(" << Res->EntryExists(entry) << ") dir(" << Res->DirectoryExists(entry) << ")\n"; // debug
 			if (Res->EntryExists(entry)) {
 				auto buf{ Res->B(entry) };
@@ -773,6 +808,9 @@ namespace Slyvina {
 
 		_____TIMAGE::~_____TIMAGE() {
 			Chat("Image " << _ID << " destroyed");
+			if (AltPic && AltPic->Destroy) {
+				AltPic->Destroy(this); return;
+			}
 			KillAllFrames();
 		}
 
@@ -801,6 +839,7 @@ namespace Slyvina {
 		void _____TIMAGE::Draw(int x, int y, int frame) {
 			_LastError = "";
 			if (!NeedScreen()) return;
+			if (AltPic && AltPic->Draw) { AltPic->Draw(this, x, y, frame); return; }
 			if (frame < 0 || frame >= Textures.size()) {
 				//char FE[400];
 				//sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());				 
@@ -1396,5 +1435,6 @@ namespace Slyvina {
 			SetAlpha(__alpha);
 		}
 #pragma endregion
-	}
+		
+}
 }

@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSG.hpp
 // 	Tricky's Quick SDL2 Graphics (header)
-// 	version: 24.11.04
+// 	version: 24.11.14
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -52,6 +52,37 @@ namespace Slyvina {
 
 		typedef void (*TQSG_PanicType)(std::string errormessage);
 
+		class TQAltPic;
+		typedef int(*TQAS)(_____TIMAGE*);
+		typedef void(*TQAHot)(_____TIMAGE*, int, int);
+		typedef void(*TQADraw)(_____TIMAGE*, int x, int y, int frame);
+		typedef void(*TQALoadReal)(_____TIMAGE*, std::string File);
+		typedef void(*TQALoadJCR6)(_____TIMAGE*, JCR6::JT_Dir J, std::string File);
+		typedef void(*TQADest)(_____TIMAGE*);
+
+		class TQAltPic {
+		private:
+			static bool _indexed;
+			static std::map<std::string, TQAltPic*> _ExtIndex;
+			static std::vector<TQAltPic> _List;
+			std::string _Ext;
+		public:
+			static void ReIndex(bool onlywhenneeded = true); // Mostly this will happen automatically, yet in cases this is really needed, well, let's go!
+			static TQAltPic* ExtDriver(std::string E) { return _ExtIndex.count(Upper(E)) ? _ExtIndex[E] : nullptr; } 
+			inline std::string Ext() { return _Ext; }
+			void Ext(std::string newExt) { _Ext = Upper(newExt); _indexed = false; }
+			TQAS
+				Width{ nullptr },
+				Height{ nullptr };
+			TQADest
+				Destroy{ nullptr }; // If set the destructor will call it.
+			TQALoadReal LoadReal{ nullptr };
+			TQALoadJCR6 LoadJCR6{ nullptr };
+			TQADraw Draw{ nullptr };
+			TQAHot Hot{ nullptr };
+			static inline TQAltPic* Create() { _List.push_back(TQAltPic()); _indexed = false;  return &_List[_List.size() - 1]; }
+		};
+
 		extern TQSG_PanicType TQSG_Panic; // When set the TQSG will execute this function whenever something goes wrong!
 
 		enum class Blend {
@@ -66,10 +97,12 @@ namespace Slyvina {
 		class _____TIMAGE {
 		private:
 			static uint64 img_cnt;
-			uint64 _ID{ ++img_cnt }; // Only serves to make debugging easier on me!
+			uint64 _ID{ ++img_cnt }; // Only serves to make debugging easier on me! (and it will also help with the TQAltPic drivers.
 			std::vector<SDL_Texture*> Textures{};
 			int hotx{ 0 }, hoty{ 0 };
 		public:
+			inline uint64 ID() const { return _ID; }
+
 			/// <summary>
 			/// Get the number of frames
 			/// </summary>
@@ -149,7 +182,13 @@ namespace Slyvina {
 			/// <param name="aiy"></param>
 			void Tile(int ax, int ay, int w, int h, int frame=0, int aix=0, int aiy=0);
 
-			inline void Hot(int x, int y) { hotx = x; hoty = y; }
+			inline void Hot(int x, int y) {
+				if (AltPic && AltPic->Hot) {
+					AltPic->Hot(this, x, y);;
+					return;
+				}
+				hotx = x; hoty = y; 
+			}
 			inline void HotCenter() { Hot(Width() / 2, Height() / 2); }
 			inline void HotBottomCenter() { Hot(Width() / 2, Height()); }
 
@@ -157,6 +196,8 @@ namespace Slyvina {
 			int Height();
 
 			void GetFormat(int *width, int *height);
+
+			TQAltPic* AltPic{ nullptr };
 
 			inline _____TIMAGE() {} // Just to avoid some crap
 			_____TIMAGE(std::string file);
