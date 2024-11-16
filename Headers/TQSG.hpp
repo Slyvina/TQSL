@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSG.hpp
 // 	Tricky's Quick SDL2 Graphics (header)
-// 	version: 24.11.14
+// 	version: 24.11.16 I
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -59,6 +59,8 @@ namespace Slyvina {
 		typedef void(*TQALoadReal)(_____TIMAGE*, std::string File);
 		typedef void(*TQALoadJCR6)(_____TIMAGE*, JCR6::JT_Dir J, std::string File);
 		typedef void(*TQADest)(_____TIMAGE*);
+		typedef void(*TQAGetFormat)(_____TIMAGE*, int*, int*);
+		typedef size_t(*TQAFrames)(_____TIMAGE*);
 
 		class TQAltPic {
 		private:
@@ -68,9 +70,9 @@ namespace Slyvina {
 			std::string _Ext;
 		public:
 			static void ReIndex(bool onlywhenneeded = true); // Mostly this will happen automatically, yet in cases this is really needed, well, let's go!
-			static TQAltPic* ExtDriver(std::string E) { return _ExtIndex.count(Upper(E)) ? _ExtIndex[E] : nullptr; } 
+			static TQAltPic* ExtDriver(std::string E) { return _ExtIndex.count(Units::Upper(E)) ? _ExtIndex[E] : nullptr; } 
 			inline std::string Ext() { return _Ext; }
-			void Ext(std::string newExt) { _Ext = Upper(newExt); _indexed = false; }
+			void Ext(std::string newExt) { _Ext = Units::Upper(newExt); _indexed = false; }
 			TQAS
 				Width{ nullptr },
 				Height{ nullptr };
@@ -80,6 +82,8 @@ namespace Slyvina {
 			TQALoadJCR6 LoadJCR6{ nullptr };
 			TQADraw Draw{ nullptr };
 			TQAHot Hot{ nullptr };
+			TQAGetFormat GetFormat{ nullptr };
+			TQAFrames Frames{ nullptr };
 			static inline TQAltPic* Create() { _List.push_back(TQAltPic()); _indexed = false;  return &_List[_List.size() - 1]; }
 		};
 
@@ -107,7 +111,7 @@ namespace Slyvina {
 			/// Get the number of frames
 			/// </summary>
 			/// <returns>The actual number of frames</returns>
-			inline size_t Frames() { return Textures.size(); }
+			inline size_t Frames() { return AltPic && AltPic->Frames ? AltPic->Frames(this) : Textures.size(); }
 
 			/// <summary>
 			/// Direct point to the texture used as a specific frame (please note 0 is the first frame so Frames()-1 is the last one).

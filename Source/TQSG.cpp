@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.11.14
+// 	version: 24.11.16
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -680,7 +680,7 @@ namespace Slyvina {
 
 		int _____TIMAGE::Height() {
 			_LastError = "";
-			if (AltPic && AltPic->Width) return AltPic->Height(this);
+			if (AltPic && AltPic->Height) return AltPic->Height(this);
 			if (!Frames()) {
 				_LastError = "<Image>->Height(): No Frames";
 				return 0;
@@ -692,6 +692,7 @@ namespace Slyvina {
 
 		void _____TIMAGE::GetFormat(int* width, int* height) {
 			_LastError = "";
+			if (AltPic && AltPic->GetFormat) { AltPic->GetFormat(this, width, height); return; }
 			if (!Frames()) {
 				_LastError = "<Image>->Height(): No Frames";
 				return;
@@ -757,6 +758,7 @@ namespace Slyvina {
 			auto fext{ Upper(ExtractExt(entry)) };
 			auto tqae{ TQAltPic::ExtDriver(fext) };
 			if (tqae && tqae->LoadJCR6) {
+				Frames();
 				tqae->LoadJCR6(this, Res,entry);
 				AltPic = tqae;
 				return;
