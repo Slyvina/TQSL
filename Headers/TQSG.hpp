@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSG.hpp
 // 	Tricky's Quick SDL2 Graphics (header)
-// 	version: 24.11.16 I
+// 	version: 24.12.18
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -371,6 +371,12 @@ namespace Slyvina {
 
 		void SetOrigin(int x, int y);
 		inline void SetOrigin() { SetOrigin(0, 0); }
+
+		/// <summary>
+		/// Will wait a certain number of ticks since the last WaitMinTicks (called automatically by Flip(). See that function for more information).
+		/// </summary>
+		/// <param name="minticks"></param>
+		void WaitMinTicks(int minticks = -1);
 
 		/// <summary>
 		/// Flip will show the result of al earlier drawing requests

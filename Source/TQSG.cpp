@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.11.16
+// 	version: 24.12.18
 // 
 // 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
 // 
@@ -338,7 +338,7 @@ namespace Slyvina {
 			_originy = y;
 		}
 
-		void Flip(int minticks) {
+		void WaitMinTicks(int minticks) {
 			if (!NeedScreen()) return;
 			//SDL_UpdateWindowSurface(gWindow);
 			static auto oud{ SDL_GetTicks() };
@@ -346,6 +346,10 @@ namespace Slyvina {
 			if (minticks >= 0) mt = minticks;
 			while (minticks && (SDL_GetTicks() - oud < mt)) SDL_Delay(1);
 			oud = SDL_GetTicks();
+		}
+
+		void Flip(int minticks) {
+			WaitMinTicks(minticks);
 			SDL_RenderPresent(_Screen->gRenderer);
 		}
 
