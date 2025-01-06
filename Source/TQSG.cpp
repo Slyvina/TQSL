@@ -1,9 +1,9 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 24.12.18
+// 	version: 25.01.06
 // 
-// 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
+// 	Copyright (C) 2022, 2023, 2024, 2025 Jeroen P. Broks
 // 
 // 	This software is provided 'as-is', without any express or implied
 // 	warranty.  In no event will the authors be held liable for any damages
@@ -153,6 +153,7 @@ namespace Slyvina {
 			SetAlpha((byte)floor(a * 255));
 		}
 		void SetColor(byte r, byte g, byte b) { _red = r; _green = g; _blue = b; _LastError = ""; }
+		void GetColor(Byte& R, Byte& G, Byte& B) { R = _red; G = _green; B = _blue; _LastError = ""; }
 		void SetColorHSV(double Hue, double Sat, double Value) {
 			Units::hsv _hsv{ Hue, Sat, Value };
 			auto rgb{ Units::hsv2rgb(_hsv) };

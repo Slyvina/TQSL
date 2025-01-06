@@ -1,9 +1,9 @@
 // License:
 // 	TQSL/Headers/TQSG.hpp
 // 	Tricky's Quick SDL2 Graphics (header)
-// 	version: 24.12.18
+// 	version: 25.01.06
 // 
-// 	Copyright (C) 2022, 2023, 2024 Jeroen P. Broks
+// 	Copyright (C) 2022, 2023, 2024, 2025 Jeroen P. Broks
 // 
 // 	This software is provided 'as-is', without any express or implied
 // 	warranty.  In no event will the authors be held liable for any damages
@@ -278,6 +278,8 @@ namespace Slyvina {
 		/// <param name="b"></param>
 		/// <param name="a"></param>
 		inline void SetColor(byte r, byte g, byte b, byte a) { SetColor(r, g, b); SetAlpha(a); };
+
+		void GetColor(Byte& R, Byte& G, Byte& B);
 
 
 		/// <summary>
