@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Headers/TQSG.hpp
 // 	Tricky's Quick SDL2 Graphics (header)
-// 	version: 25.01.06
+// 	version: 25.01.13
 // 
 // 	Copyright (C) 2022, 2023, 2024, 2025 Jeroen P. Broks
 // 
@@ -70,7 +70,7 @@ namespace Slyvina {
 			std::string _Ext;
 		public:
 			static void ReIndex(bool onlywhenneeded = true); // Mostly this will happen automatically, yet in cases this is really needed, well, let's go!
-			static TQAltPic* ExtDriver(std::string E) { return _ExtIndex.count(Units::Upper(E)) ? _ExtIndex[E] : nullptr; } 
+			static TQAltPic* ExtDriver(std::string E) { return _ExtIndex.count(Units::Upper(E)) ? _ExtIndex[E] : nullptr; }
 			inline std::string Ext() { return _Ext; }
 			void Ext(std::string newExt) { _Ext = Units::Upper(newExt); _indexed = false; }
 			TQAS
@@ -105,6 +105,8 @@ namespace Slyvina {
 			std::vector<SDL_Texture*> Textures{};
 			int hotx{ 0 }, hoty{ 0 };
 		public:
+		    inline bool Valid() { return Textures.size()>0; }
+
 			inline uint64 ID() const { return _ID; }
 
 			/// <summary>
@@ -117,7 +119,7 @@ namespace Slyvina {
 			/// Direct point to the texture used as a specific frame (please note 0 is the first frame so Frames()-1 is the last one).
 			/// </summary>
 			/// <param name="frame">Frame number</param>
-			/// <returns>Texture pointer (nullptr if failure, although a fatal error should pop up, unless you caught that with your own panic function)</returns>						
+			/// <returns>Texture pointer (nullptr if failure, although a fatal error should pop up, unless you caught that with your own panic function)</returns>
 			SDL_Texture* GetFrame(size_t frame);
 
 			/// <summary>
@@ -151,7 +153,7 @@ namespace Slyvina {
 			void StretchDraw(int x, int y, int w, int h, int frame = 0);
 
 			/// <summary>
-			/// Draws an images. Hotspots and scale settings will be taken into account. 
+			/// Draws an images. Hotspots and scale settings will be taken into account.
 			/// </summary>
 			/// <param name="x"></param>
 			/// <param name="y"></param>
@@ -191,7 +193,7 @@ namespace Slyvina {
 					AltPic->Hot(this, x, y);;
 					return;
 				}
-				hotx = x; hoty = y; 
+				hotx = x; hoty = y;
 			}
 			inline void HotCenter() { Hot(Width() / 2, Height() / 2); }
 			inline void HotBottomCenter() { Hot(Width() / 2, Height()); }
@@ -217,7 +219,7 @@ namespace Slyvina {
 			//std::map<uint32, _____TIMAGEFONTCHAR*> CharPics{};
 			//std::map<int, std::shared_ptr<_____TIMAGEFONTCHAR>> CharPics{};
 			std::shared_ptr<_____TIMAGEFONTCHAR> CharPics[256*256];
-			
+
 			void KillAll();
 			//_____TIMAGEFONTCHAR* GetChar(uint32 c);
 			//_____TIMAGEFONTCHAR* GetChar(byte b1, byte b2);
@@ -440,7 +442,7 @@ namespace Slyvina {
 		void Circle(int center_x, int center_y, int radius, int segments = 200);
 
 		/// <summary>
-		/// 
+		///
 		/// Draw a circle
 		/// </summary>
 		/// <param name="center_x"></param>

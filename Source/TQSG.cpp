@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 25.01.06
+// 	version: 25.01.13
 // 
 // 	Copyright (C) 2022, 2023, 2024, 2025 Jeroen P. Broks
 // 
@@ -47,7 +47,7 @@ namespace Slyvina {
 	namespace TQSG {
 
 
-		bool IgnoreDoubleCharError=true; 
+		bool IgnoreDoubleCharError=true;
 
 
 		static std::string
@@ -238,7 +238,7 @@ namespace Slyvina {
 						printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
 						return false;
 					}
-#endif				
+#endif
 					Cls();
 					return true;
 				}
@@ -811,7 +811,7 @@ namespace Slyvina {
 				}
 			}
 		}
-	
+
 
 		_____TIMAGE::~_____TIMAGE() {
 			Chat("Image " << _ID << " destroyed");
@@ -845,16 +845,18 @@ namespace Slyvina {
 
 		void _____TIMAGE::Draw(int x, int y, int frame) {
 			_LastError = "";
+			if (!this){_LastError=TrSPrintF("<nullpointer>.Draw(%d,%d,%d)",x,y,frame); Paniek(_LastError); }
 			if (!NeedScreen()) return;
 			if (AltPic && AltPic->Draw) { AltPic->Draw(this, x, y, frame); return; }
 			if (frame < 0 || frame >= Textures.size()) {
 				//char FE[400];
-				//sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());				 
+				//sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());
 				//LastError = FE;
 				auto FE{ TrSPrintF("DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size()) };
 				Paniek(FE);
 				return;
 			}
+			//std::cout << "...\n";
 			SDL_Rect Target;
 			Target.x = AltScreen.X((x - (int)ceil(hotx * _scalex)) + _originx);
 			Target.y = AltScreen.Y((y - (int)ceil(hoty * _scaley)) + _originy);
@@ -873,7 +875,7 @@ namespace Slyvina {
 				/*
 				char FE[400];
 				sprintf_s(FE, 395, "DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size());
-				//LastError = FE;				
+				//LastError = FE;
 				Paniek(FE);
 				//*/
 				Paniek(TrSPrintF("DRAW:Texture frame assignment out of bouds! (%d/%d/R)", frame, (int)Textures.size()));
@@ -942,7 +944,7 @@ namespace Slyvina {
 					y = ay + _originy,
 					ix = aix,
 					iy = aiy;
-				
+
 
 				_LastError = "";
 				// todo: Fix issues with negative ix
@@ -958,12 +960,12 @@ namespace Slyvina {
 					//cout << "neg x:" << ix << " to ";
 					//ix = (AltScreen.X(x) - (Width() + ix)) % Width();
 					//cout << ix << "\n";
-					
+
 					// Faulty: 	ix = (x - (Width() + ix)) % Width();
 					ix = Width() - (abs(ix) % Width());
 				}
 				if (iy < 0) {
-					//cout << "neg x:" << ix << " to ";					
+					//cout << "neg x:" << ix << " to ";
 					//iy = (AltScreen.Y(y) - (Height() + iy)) % Height();
 					//cout << ix << "\n";
 
@@ -1172,7 +1174,7 @@ namespace Slyvina {
 				_LastError = string(t) + string(re.what());
 				cout << "ERROR: " << _LastError << endl;
 				SetColor(255, 0, 0);
-				Rect(aix, aiy, w, h);			
+				Rect(aix, aiy, w, h);
 			}
 		}
 #pragma endregion
@@ -1271,7 +1273,7 @@ namespace Slyvina {
 				}
 				if (!WantFile.size()) {
 					for (byte i = 0; i < TryFmtMax; i++) {
-						auto fn{ pathprefix + TrSPrintF(TryFmt[i],c) };						
+						auto fn{ pathprefix + TrSPrintF(TryFmt[i],c) };
 						if (FntRes->EntryExists(fn)) {
 							Chat("For character #" << c << ", file " << fn << " has been found!");
 							WantFile = fn;
@@ -1309,7 +1311,7 @@ namespace Slyvina {
 					}
 					if (count)	spacewidth = total / count;
 				}
-			}			
+			}
 			return CharPics[c];
 		}
 		//_____TIMAGEFONTCHAR* _____TIMAGEFONT::GetChar(byte b1, byte b2) {
@@ -1351,9 +1353,9 @@ namespace Slyvina {
 						_x = x;
 						break;
 					case '|': {
-						if (pos + 1 >= Text.size()) { 
+						if (pos + 1 >= Text.size()) {
 							printf("\x1b[31mError\x1b[37m Double char line end error! (%d/%d/%s)\x1b[0m\n", (int)pos, (int)Text.size(), Text.c_str());
-							if (IgnoreDoubleCharError) 
+							if (IgnoreDoubleCharError)
 								break;
 							else
 								Paniek("Double char line end error!");
@@ -1442,6 +1444,6 @@ namespace Slyvina {
 			SetAlpha(__alpha);
 		}
 #pragma endregion
-		
+
 }
 }
