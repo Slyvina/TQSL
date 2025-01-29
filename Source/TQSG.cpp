@@ -1,7 +1,7 @@
 // License:
 // 	TQSL/Source/TQSG.cpp
 // 	Tricky's Quick SDL2 Graphics
-// 	version: 25.01.13
+// 	version: 25.01.29
 // 
 // 	Copyright (C) 2022, 2023, 2024, 2025 Jeroen P. Broks
 // 
@@ -40,6 +40,7 @@
 #include <SlyvHSVRGB.hpp>
 #include <SlyvStream.hpp>
 #include <SlyvSTOI.hpp>
+#include <SlyvGINIE.hpp>
 
 using namespace Slyvina::Units;
 
@@ -795,8 +796,19 @@ namespace Slyvina {
 			}
 			//std::cout << "LoadImage " << entry << " Textures:" << Textures.size() << std::endl; // debug
 			if (!Textures.size()) { _LastError = "No textures loaded!"; return; }
+			auto xfile{StripExt(entry) + ".dtqsl"};
 			auto hotfile{ StripExt(entry) + ".hot" }; //std::cout << "HOT!!! " << hotfile << " exists: " << boolstring(Res->EntryExists(hotfile)) << "\n";
-			if (Res->EntryExists(hotfile)) {
+			if (Res->EntryExists(xfile)) {
+				auto src{Res->GetString(xfile)};
+				auto dat{ParseGINIE(src)};
+				auto Hot{Upper(dat->Value("Hot","Hot"))};
+				if (Hot=="CENTER") HotCenter();
+				else if (Hot=="BOTTOMCENTER") HotBottomCenter();
+				else {
+						int x{dat->IntValue("Hot","X")}, y{dat->IntValue("Hot","Y")};
+						this->Hot(x,y);
+				}
+			} else if (Res->EntryExists(hotfile)) {
 				auto hotcontent{ Upper(Trim(Res->GetString(hotfile))) };
 				//std::cout << "\7HOT!!! " << hotcontent; for (size_t i = 0; i < hotcontent.size(); ++i) std::cout << "; Chr(" << (int)hotcontent[i] << ")"; std::cout << "\n";
 				if (hotcontent == "CENTER") {
